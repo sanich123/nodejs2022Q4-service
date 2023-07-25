@@ -13,4 +13,6 @@ export const MESSAGES = {
     'Received old password does not equal user password, stored in the database',
   SUCCESS_DELETE:
     'We have just successfully deleted your data from the storage',
+  EMPTY_FIELDS:
+    'Old password or new password must not be null empty or undefined',
 };

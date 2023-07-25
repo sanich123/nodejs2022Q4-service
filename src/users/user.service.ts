@@ -10,14 +10,14 @@ export class UserService {
   getAllUsers(): User[] {
     return this.users;
   }
-  setNewUser(createUserDto: CreateUserDto) {
+  setNewUser({ login, password }: CreateUserDto) {
     const id = v4();
-    const version = 0;
+    const version = 1;
     const createdAt = Date.now();
     const updatedAt = Date.now();
-    const userToSave = { ...createUserDto, id, version, createdAt, updatedAt };
+    const userToSave = { login, password, id, version, createdAt, updatedAt };
     this.users.push(userToSave);
-    return userToSave;
+    return { id, login, version, createdAt, updatedAt };
   }
   getUserById(userId: string) {
     return this.users.find(({ id }) => userId === id);
@@ -26,8 +26,11 @@ export class UserService {
     return this.users.findIndex(({ id }) => userId === id);
   }
   setNewPassword(index: number, newPassword: string) {
+    this.users[index].version += 1;
     this.users[index].password = newPassword;
-    return this.users[index];
+    this.users[index].updatedAt = Date.now();
+    const { login, version, createdAt, updatedAt, id } = this.users[index];
+    return { login, version, createdAt, updatedAt, id };
   }
   deleteUser(index: number) {
     this.users.splice(index, 1);

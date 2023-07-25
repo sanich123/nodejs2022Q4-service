@@ -21,7 +21,7 @@ import { validate } from 'uuid';
 const { USER } = PATHS;
 const { BAD_REQUEST, CREATED, NOT_FOUND, FORBIDDEN, OK, NO_CONTENT } =
   HttpStatus;
-const { WRONG_ID, NOT_FOUND_USER, WRONG_PASSWORD } = MESSAGES;
+const { WRONG_ID, NOT_FOUND_USER, WRONG_PASSWORD, EMPTY_FIELDS } = MESSAGES;
 type ParamsId = { id: string };
 
 @Controller()
@@ -49,6 +49,8 @@ export class UsersController {
   ) {
     const findedIndex = this.userService.findIndexOfUserById(id);
     if (!validate(id)) response.status(BAD_REQUEST).send(WRONG_ID);
+    else if (!oldPassword || !newPassword)
+      response.status(BAD_REQUEST).send(EMPTY_FIELDS);
     else if (findedIndex === -1)
       response.status(NOT_FOUND).send(NOT_FOUND_USER);
     else if (findedIndex !== -1) {
