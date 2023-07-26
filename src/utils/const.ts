@@ -6,7 +6,7 @@ export const PATHS = {
 };
 
 export const MESSAGES = {
-  BAD_BODY: 'Received body does not contain any valid login or password',
+  BAD_BODY: 'Received body does not contain required fields',
   WRONG_ID: 'Your user id is not a valid v4 id',
   NOT_FOUND_USER: 'We could not be able to find user with received id',
   WRONG_PASSWORD:
@@ -15,4 +15,5 @@ export const MESSAGES = {
     'We have just successfully deleted your data from the storage',
   EMPTY_FIELDS:
     'Old password or new password must not be null empty or undefined',
+  NOT_FOUND_TRACK: 'We could not be able to find track with received id',
 };

@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { UserService } from './user.service';
-import { User } from './types';
+import { User, ParamsId } from './types';
 import { MESSAGES, PATHS } from 'src/utils/const';
 import { CreateUserDto, UpdatePasswordDto } from './user.dto';
 import { validate } from 'uuid';
@@ -22,10 +22,9 @@ const { USER } = PATHS;
 const { BAD_REQUEST, CREATED, NOT_FOUND, FORBIDDEN, OK, NO_CONTENT } =
   HttpStatus;
 const { WRONG_ID, NOT_FOUND_USER, WRONG_PASSWORD, EMPTY_FIELDS } = MESSAGES;
-type ParamsId = { id: string };
 
 @Controller()
-export class UsersController {
+export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get(USER)

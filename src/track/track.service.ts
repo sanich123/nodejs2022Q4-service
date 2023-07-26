@@ -1,0 +1,37 @@
+import { Injectable } from '@nestjs/common';
+import { Track } from './types';
+import { CreateTrackDto } from './track.dto';
+import { v4 } from 'uuid';
+
+@Injectable()
+export class TrackService {
+  private readonly tracks: Track[] = [];
+
+  getAllTracks() {
+    return this.tracks;
+  }
+  saveTrack(trackDto: CreateTrackDto) {
+    const { name, duration, albumId, artistId } = trackDto;
+    const modifiedTrack = {
+      id: v4(),
+      name,
+      duration,
+      albumId: albumId ? albumId : null,
+      artistId: artistId ? artistId : null,
+    };
+
+    this.tracks.push(modifiedTrack);
+    return modifiedTrack;
+  }
+
+  getTrackById(trackId: string) {
+    return this.tracks.find(({ id }) => id === trackId);
+  }
+
+  getTrackIndexById(trackId: string) {
+    return this.tracks.findIndex(({ id }) => id === trackId);
+  }
+  deleteTrack(index: number) {
+    return this.tracks.splice(index, 1);
+  }
+}
