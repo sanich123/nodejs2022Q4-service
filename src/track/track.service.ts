@@ -5,7 +5,7 @@ import { v4 } from 'uuid';
 
 @Injectable()
 export class TrackService {
-  private readonly tracks: Track[] = [];
+  private tracks: Track[] = [];
 
   getAllTracks() {
     return this.tracks;
@@ -42,5 +42,13 @@ export class TrackService {
   }
   deleteTrack(index: number) {
     return this.tracks.splice(index, 1);
+  }
+  updateArtistIdAfterDeletingArtist(id: string) {
+    return this.tracks.map((track) => {
+      if (track.artistId === id) {
+        track.artistId = null;
+      }
+      return track;
+    });
   }
 }
