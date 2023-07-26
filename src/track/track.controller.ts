@@ -1,14 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpStatus,
-  Param,
-  Post,
-  Put,
-  Res,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Res } from '@nestjs/common';
 import { TrackService } from './track.service';
 import { MESSAGES, PATHS } from 'src/utils/const';
 import { CreateTrackDto } from './track.dto';
@@ -45,18 +35,12 @@ export class TrackController {
     if (!validate(id)) res.status(BAD_REQUEST).send(WRONG_ID);
     else {
       const findedTrack = this.trackService.getTrackById(id);
-      !findedTrack
-        ? res.status(NOT_FOUND).send(NOT_FOUND_TRACK)
-        : res.status(OK).send(findedTrack);
+      !findedTrack ? res.status(NOT_FOUND).send(NOT_FOUND_TRACK) : res.status(OK).send(findedTrack);
     }
   }
 
   @Put(`${TRACK}/:id`)
-  updateTrackById(
-    @Body() trackDto: CreateTrackDto,
-    @Param() { id }: ParamsId,
-    @Res() res: Response,
-  ) {
+  updateTrackById(@Body() trackDto: CreateTrackDto, @Param() { id }: ParamsId, @Res() res: Response) {
     if (!validate(id)) res.status(BAD_REQUEST).send(WRONG_ID);
     else if (checkPropertiesInTrackDto(trackDto)) {
       res.status(BAD_REQUEST).send(BAD_BODY);
@@ -64,9 +48,7 @@ export class TrackController {
       const findedIndex = this.trackService.getTrackIndexById(id);
       findedIndex === -1
         ? res.status(NOT_FOUND).send(NOT_FOUND_TRACK)
-        : res
-            .status(OK)
-            .send(this.trackService.updateTrack(trackDto, findedIndex));
+        : res.status(OK).send(this.trackService.updateTrack(trackDto, findedIndex));
     }
   }
 

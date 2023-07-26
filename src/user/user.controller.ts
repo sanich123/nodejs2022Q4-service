@@ -19,8 +19,7 @@ import { CreateUserDto, UpdatePasswordDto } from './user.dto';
 import { validate } from 'uuid';
 
 const { USER } = PATHS;
-const { BAD_REQUEST, CREATED, NOT_FOUND, FORBIDDEN, OK, NO_CONTENT } =
-  HttpStatus;
+const { BAD_REQUEST, CREATED, NOT_FOUND, FORBIDDEN, OK, NO_CONTENT } = HttpStatus;
 const { WRONG_ID, NOT_FOUND_USER, WRONG_PASSWORD, EMPTY_FIELDS } = MESSAGES;
 
 @Controller()
@@ -35,8 +34,7 @@ export class UserController {
   @Get(`${USER}/:id`)
   getUserById(@Param() { id }: ParamsId, @Res() response: Response) {
     if (!validate(id)) response.status(BAD_REQUEST).send(WRONG_ID);
-    else if (!this.userService.getUserById(id))
-      response.status(NOT_FOUND).send(NOT_FOUND_USER);
+    else if (!this.userService.getUserById(id)) response.status(NOT_FOUND).send(NOT_FOUND_USER);
     else response.send(this.userService.getUserById(id));
   }
 
@@ -48,19 +46,14 @@ export class UserController {
   ) {
     const findedIndex = this.userService.findIndexOfUserById(id);
     if (!validate(id)) response.status(BAD_REQUEST).send(WRONG_ID);
-    else if (!oldPassword || !newPassword)
-      response.status(BAD_REQUEST).send(EMPTY_FIELDS);
-    else if (findedIndex === -1)
-      response.status(NOT_FOUND).send(NOT_FOUND_USER);
+    else if (!oldPassword || !newPassword) response.status(BAD_REQUEST).send(EMPTY_FIELDS);
+    else if (findedIndex === -1) response.status(NOT_FOUND).send(NOT_FOUND_USER);
     else if (findedIndex !== -1) {
       const { password } = this.userService.getAllUsers()[findedIndex];
       if (password !== oldPassword) {
         response.status(FORBIDDEN).send(WRONG_PASSWORD);
       } else {
-        const updatedUser = this.userService.setNewPassword(
-          findedIndex,
-          newPassword,
-        );
+        const updatedUser = this.userService.setNewPassword(findedIndex, newPassword);
         response.status(OK).send(updatedUser);
       }
     }
@@ -69,8 +62,7 @@ export class UserController {
   @Post(USER)
   @HttpCode(CREATED)
   createUser(@Body() { login, password }: CreateUserDto) {
-    if (!login || !password)
-      throw new HttpException(MESSAGES.BAD_BODY, BAD_REQUEST);
+    if (!login || !password) throw new HttpException(MESSAGES.BAD_BODY, BAD_REQUEST);
     else return this.userService.setNewUser({ login, password });
   }
 
@@ -79,8 +71,7 @@ export class UserController {
   deleteUser(@Param() { id }: ParamsId, @Res() response: Response) {
     const findedIndex = this.userService.findIndexOfUserById(id);
     if (!validate(id)) response.status(BAD_REQUEST).send(WRONG_ID);
-    else if (findedIndex === -1)
-      response.status(NOT_FOUND).send(NOT_FOUND_USER);
+    else if (findedIndex === -1) response.status(NOT_FOUND).send(NOT_FOUND_USER);
     else {
       this.userService.deleteUser(findedIndex);
       response.status(NO_CONTENT).send();

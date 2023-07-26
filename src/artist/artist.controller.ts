@@ -1,21 +1,15 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Res,
-  Param,
-} from '@nestjs/common/decorators';
+import { Body, Controller, Get, Post, Res, Param, Put, Delete } from '@nestjs/common/decorators';
 import { ArtistService } from './artist.service';
 import { MESSAGES, PATHS } from 'src/utils/const';
 import { CreateArtistDto } from './artist.dto';
 import { Response } from 'express';
 import { HttpStatus } from '@nestjs/common';
 import { ParamsId } from 'src/user/types';
+import { validate } from 'uuid';
 
 const { ARTIST } = PATHS;
 const { BAD_REQUEST, CREATED, NOT_FOUND, OK, NO_CONTENT } = HttpStatus;
-const { BAD_BODY, WRONG_ID, NOT_FOUND_TRACK } = MESSAGES;
+const { BAD_BODY, WRONG_ID, NOT_FOUND_ARTIST } = MESSAGES;
 
 @Controller()
 export class ArtistController {
@@ -27,11 +21,8 @@ export class ArtistController {
   }
 
   @Post(ARTIST)
-  createArtist(
-    @Body() { name, grammy }: CreateArtistDto,
-    @Res() res: Response,
-  ) {
-    if (!name || !grammy) {
+  createArtist(@Body() { name, grammy }: CreateArtistDto, @Res() res: Response) {
+    if (!name || typeof name !== 'string' || typeof grammy !== 'boolean') {
       res.status(BAD_REQUEST).send(BAD_BODY);
     } else {
       const createdArtist = this.artistService.saveArtist({ name, grammy });
@@ -39,6 +30,34 @@ export class ArtistController {
     }
   }
 
-  // @Get(`${ARTIST}/:id`)
-  // getArtistById(@Param() { id }: ParamsId) {}
+  @Get(`${ARTIST}/:id`)
+  getArtistById(@Param() { id }: ParamsId, @Res() res: Response) {
+    if (!validate(id)) res.status(BAD_REQUEST).send(WRONG_ID);
+    else {
+      const findedArtist = this.artistService.getArtistById(id);
+      findedArtist ? res.status(OK).send(findedArtist) : res.status(NOT_FOUND).send(NOT_FOUND_ARTIST);
+    }
+  }
+
+  @Put(`${ARTIST}/:id`)
+  updateArtistByIndex(@Body() artistDto: CreateArtistDto, @Param() { id }: ParamsId, @Res() res: Response) {
+    const artistIndex = this.artistService.getArtistIndexById(id);
+    artistIndex !== -1
+      ? res.status(OK).send(this.artistService.updateArtistByIndex(artistIndex, artistDto))
+      : res.status(NOT_FOUND).send(NOT_FOUND_ARTIST);
+  }
+
+  @Delete(`${ARTIST}/:id`)
+  deleteArtistById(@Param() { id }: ParamsId, @Res() res: Response) {
+    if (!validate(id)) res.status(BAD_REQUEST).send(WRONG_ID);
+    else {
+      const findedIndex = this.artistService.getArtistIndexById(id);
+      if (findedIndex === -1) {
+        res.status(NOT_FOUND).send(NOT_FOUND_ARTIST);
+      } else {
+        this.artistService.deleteArtistById(findedIndex);
+        res.status(NO_CONTENT).send();
+      }
+    }
+  }
 }
