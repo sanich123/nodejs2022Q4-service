@@ -6,6 +6,7 @@ import { Response } from 'express';
 import { HttpStatus } from '@nestjs/common';
 import { ParamsId } from 'src/user/types';
 import { validate } from 'uuid';
+import { TrackService } from 'src/track/track.service';
 
 const { ALBUM } = PATHS;
 const { BAD_REQUEST, CREATED, NOT_FOUND, OK, NO_CONTENT } = HttpStatus;
@@ -13,7 +14,7 @@ const { BAD_BODY, WRONG_ID, NOT_FOUND_ALBUM } = MESSAGES;
 
 @Controller()
 export class AlbumController {
-  constructor(private readonly albumService: AlbumService) {}
+  constructor(private readonly albumService: AlbumService, private readonly trackService: TrackService) {}
 
   @Get(ALBUM)
   getAllAlbums() {
@@ -71,6 +72,7 @@ export class AlbumController {
         res.status(NOT_FOUND).send(NOT_FOUND_ALBUM);
       } else {
         this.albumService.deleteAlbumById(findedIndex);
+        this.trackService.updateAlbumIdAfterDeletingAlbum(id);
         res.status(NO_CONTENT).send();
       }
     }

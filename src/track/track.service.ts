@@ -51,4 +51,12 @@ export class TrackService {
       return track;
     });
   }
+  updateAlbumIdAfterDeletingAlbum(id: string) {
+    return this.tracks.map((track) => {
+      if (track.albumId === id) {
+        track.albumId = null;
+      }
+      return track;
+    });
+  }
 }
