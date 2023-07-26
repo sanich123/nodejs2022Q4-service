@@ -1,4 +1,11 @@
-import { Body, Controller, Get, Post, Res } from '@nestjs/common/decorators';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Res,
+  Param,
+} from '@nestjs/common/decorators';
 import { ArtistService } from './artist.service';
 import { MESSAGES, PATHS } from 'src/utils/const';
 import { CreateArtistDto } from './artist.dto';
@@ -32,6 +39,6 @@ export class ArtistController {
     }
   }
 
-  @Get(`${ARTIST}/:id`)
-  getArtistById(@Param() { id }: ParamsId) {}
+  // @Get(`${ARTIST}/:id`)
+  // getArtistById(@Param() { id }: ParamsId) {}
 }

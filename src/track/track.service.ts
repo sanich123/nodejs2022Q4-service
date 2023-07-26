@@ -24,6 +24,15 @@ export class TrackService {
     return modifiedTrack;
   }
 
+  updateTrack(trackDto: CreateTrackDto, index: number) {
+    for (const key in trackDto) {
+      if (trackDto[key]) {
+        this.getAllTracks()[index][key] = trackDto[key];
+      }
+    }
+    return this.getAllTracks()[index];
+  }
+
   getTrackById(trackId: string) {
     return this.tracks.find(({ id }) => id === trackId);
   }

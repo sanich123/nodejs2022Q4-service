@@ -15,6 +15,7 @@ import { CreateTrackDto } from './track.dto';
 import { Response } from 'express';
 import { ParamsId } from 'src/user/types';
 import { validate } from 'uuid';
+import { checkPropertiesInTrackDto } from 'src/utils/utils';
 
 const { TRACK } = PATHS;
 const { BAD_REQUEST, CREATED, NOT_FOUND, OK, NO_CONTENT } = HttpStatus;
@@ -44,24 +45,28 @@ export class TrackController {
     if (!validate(id)) res.status(BAD_REQUEST).send(WRONG_ID);
     else {
       const findedTrack = this.trackService.getTrackById(id);
-      if (!findedTrack) {
-        res.status(NOT_FOUND).send(NOT_FOUND_TRACK);
-      } else {
-        res.status(OK).send(findedTrack);
-      }
+      !findedTrack
+        ? res.status(NOT_FOUND).send(NOT_FOUND_TRACK)
+        : res.status(OK).send(findedTrack);
     }
   }
 
   @Put(`${TRACK}/:id`)
-  updateTrackById(@Param() { id }: ParamsId, @Res() res: Response) {
+  updateTrackById(
+    @Body() trackDto: CreateTrackDto,
+    @Param() { id }: ParamsId,
+    @Res() res: Response,
+  ) {
     if (!validate(id)) res.status(BAD_REQUEST).send(WRONG_ID);
-    else {
-      const findedTrack = this.trackService.getTrackById(id);
-      if (!findedTrack) {
-        res.status(NOT_FOUND).send(NOT_FOUND_TRACK);
-      } else {
-        res.status(OK).send(findedTrack);
-      }
+    else if (checkPropertiesInTrackDto(trackDto)) {
+      res.status(BAD_REQUEST).send(BAD_BODY);
+    } else {
+      const findedIndex = this.trackService.getTrackIndexById(id);
+      findedIndex === -1
+        ? res.status(NOT_FOUND).send(NOT_FOUND_TRACK)
+        : res
+            .status(OK)
+            .send(this.trackService.updateTrack(trackDto, findedIndex));
     }
   }
 
