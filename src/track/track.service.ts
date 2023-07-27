@@ -5,7 +5,7 @@ import { v4 } from 'uuid';
 
 @Injectable()
 export class TrackService {
-  private tracks: Track[] = [];
+  private readonly tracks: Track[] = [];
 
   getAllTracks() {
     return this.tracks;
@@ -23,7 +23,6 @@ export class TrackService {
     this.tracks.push(modifiedTrack);
     return modifiedTrack;
   }
-
   updateTrack(trackDto: CreateTrackDto, index: number) {
     for (const key in trackDto) {
       if (trackDto[key]) {
@@ -32,11 +31,9 @@ export class TrackService {
     }
     return this.getAllTracks()[index];
   }
-
   getTrackById(trackId: string) {
     return this.tracks.find(({ id }) => id === trackId);
   }
-
   getTrackIndexById(trackId: string) {
     return this.tracks.findIndex(({ id }) => id === trackId);
   }
