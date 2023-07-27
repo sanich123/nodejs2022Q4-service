@@ -26,3 +26,16 @@ export const MESSAGES = {
   NOT_FOUND_FAVORITE_ALBUM: 'We could not be able to find received album id in favorites',
   NOT_FOUND_FAVORITES_ARTIST: 'We could not be able to find received artist id in favorites',
 };
+
+export const PLACES = {
+  TRACKS: 'tracks',
+  ALBUMS: 'albums',
+  USERS: 'users',
+  ARTISTS: 'artists',
+  FAVS: 'favorites',
+};
+
+export const PROPS_TO_DELETE = {
+  artistId: 'artistId',
+  albumId: 'albumId',
+};

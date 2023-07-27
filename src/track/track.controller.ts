@@ -1,64 +1,67 @@
 import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Res } from '@nestjs/common';
-import { TrackService } from './track.service';
-import { MESSAGES, PATHS } from 'src/utils/const';
+import { MESSAGES, PATHS, PLACES } from 'src/utils/const';
 import { CreateTrackDto } from './track.dto';
 import { Response } from 'express';
 import { ParamsId } from 'src/user/types';
 import { validate } from 'uuid';
 import { checkPropertiesInTrackDto } from 'src/utils/utils';
+import { DatabaseService } from 'src/database/database.service';
 
 const { TRACK } = PATHS;
+const { TRACKS } = PLACES;
 const { BAD_REQUEST, CREATED, NOT_FOUND, OK, NO_CONTENT } = HttpStatus;
 const { BAD_BODY, WRONG_ID, NOT_FOUND_TRACK } = MESSAGES;
 
-@Controller()
+@Controller(TRACK)
 export class TrackController {
-  constructor(private readonly trackService: TrackService) {}
-  @Get(TRACK)
+  constructor(private readonly dbService: DatabaseService) {}
+  @Get()
   getTracks() {
-    return this.trackService.getAllTracks();
+    return this.dbService.getAllEntities(TRACKS);
   }
 
-  @Post(TRACK)
+  @Post()
   postTrack(@Body() trackDto: CreateTrackDto, @Res() res: Response) {
     const { name, duration } = trackDto;
+
     if (!name || !duration) {
       res.status(BAD_REQUEST).send(BAD_BODY);
     } else {
-      const savedTrack = this.trackService.saveTrack(trackDto);
+      const savedTrack = this.dbService.pushNewEntity(TRACKS, trackDto);
       res.status(CREATED).send(savedTrack);
     }
   }
 
-  @Get(`${TRACK}/:id`)
+  @Get(`:id`)
   getTrackById(@Param() { id }: ParamsId, @Res() res: Response) {
     if (!validate(id)) res.status(BAD_REQUEST).send(WRONG_ID);
     else {
-      const findedTrack = this.trackService.getTrackById(id);
+      const findedTrack = this.dbService.getEntityById(TRACKS, id);
       !findedTrack ? res.status(NOT_FOUND).send(NOT_FOUND_TRACK) : res.status(OK).send(findedTrack);
     }
   }
 
-  @Put(`${TRACK}/:id`)
+  @Put(`:id`)
   updateTrackById(@Body() trackDto: CreateTrackDto, @Param() { id }: ParamsId, @Res() res: Response) {
     if (!validate(id)) res.status(BAD_REQUEST).send(WRONG_ID);
     else if (checkPropertiesInTrackDto(trackDto)) {
       res.status(BAD_REQUEST).send(BAD_BODY);
     } else {
-      const findedIndex = this.trackService.getTrackIndexById(id);
+      const findedIndex = this.dbService.getIndexEntityById(TRACKS, id);
       findedIndex === -1
         ? res.status(NOT_FOUND).send(NOT_FOUND_TRACK)
-        : res.status(OK).send(this.trackService.updateTrack(trackDto, findedIndex));
+        : res.status(OK).send(this.dbService.updateEntityByIndex(TRACKS, findedIndex, trackDto));
     }
   }
 
-  @Delete(`${TRACK}/:id`)
+  @Delete(`:id`)
   deleteTrackById(@Param() { id }: ParamsId, @Res() res: Response) {
     if (!validate(id)) res.status(BAD_REQUEST).send(WRONG_ID);
     else {
-      const index = this.trackService.getTrackIndexById(id);
+      const index = this.dbService.getIndexEntityById(TRACKS, id);
       if (index !== -1) {
-        this.trackService.deleteTrack(index);
+        this.dbService.deleteEntityByIndex(TRACKS, index);
+        this.dbService.deleteFavoriteEntityById(TRACKS, id);
         res.status(NO_CONTENT).send();
       } else {
         res.status(NOT_FOUND).send(NOT_FOUND_TRACK);

@@ -1,15 +1,13 @@
 import { Controller, Get, Post, Res, Param, Delete } from '@nestjs/common/decorators';
-import { FavsService } from './favs.service';
-import { MESSAGES, PATHS } from 'src/utils/const';
+import { MESSAGES, PATHS, PLACES } from 'src/utils/const';
 import { HttpStatus } from '@nestjs/common';
 import { Response } from 'express';
 import { validate } from 'uuid';
 import { ParamsId } from 'src/user/types';
-import { TrackService } from 'src/track/track.service';
-import { AlbumService } from 'src/album/album.service';
-import { ArtistService } from 'src/artist/artist.service';
+import { DatabaseService } from 'src/database/database.service';
 
 const { FAVORITES, TRACK, ALBUM, ARTIST } = PATHS;
+const { FAVS, TRACKS, ALBUMS, ARTISTS } = PLACES;
 const { BAD_REQUEST, CREATED, NOT_FOUND, NO_CONTENT, UNPROCESSABLE_ENTITY } = HttpStatus;
 const {
   WRONG_TRACK_ID,
@@ -26,41 +24,36 @@ const {
   NOT_FOUND_ARTIST,
 } = MESSAGES;
 
-@Controller()
+@Controller(FAVORITES)
 export class FavsController {
-  constructor(
-    private readonly favsService: FavsService,
-    private readonly trackService: TrackService,
-    private readonly albumService: AlbumService,
-    private readonly artistService: ArtistService,
-  ) {}
+  constructor(private readonly dbService: DatabaseService) {}
 
-  @Get(FAVORITES)
+  @Get()
   getAllFavorites() {
-    return this.favsService.getAllFavorites();
+    return this.dbService.getAllEntities(FAVS);
   }
 
-  @Post(`${FAVORITES}/${TRACK}/:id`)
+  @Post(`${TRACK}/:id`)
   addTrackToFavorites(@Res() res: Response, @Param() { id }: ParamsId) {
     if (!validate(id)) res.status(BAD_REQUEST).send(WRONG_TRACK_ID);
     else {
-      const findedTrack = this.trackService.getTrackById(id);
+      const findedTrack = this.dbService.getEntityById(TRACKS, id);
       if (!findedTrack) {
         res.status(UNPROCESSABLE_ENTITY).send(NOT_FOUND_TRACK);
       } else {
-        this.favsService.setTrackToFavorites(findedTrack);
+        this.dbService.pushEntityToFavorites(TRACKS, findedTrack);
         res.status(CREATED).send(ADD_TRACK_TO_FAVORITES);
       }
     }
   }
 
-  @Delete(`${FAVORITES}/${TRACK}/:id`)
+  @Delete(`${TRACK}/:id`)
   deleteTrackFromFavorites(@Res() res: Response, @Param() { id }: ParamsId) {
     if (!validate(id)) res.status(BAD_REQUEST).send(WRONG_TRACK_ID);
     else {
-      const findedFavoriteTrackIndex = this.favsService.getIndexFavoriteTrackById(id);
+      const findedFavoriteTrackIndex = this.dbService.getIndexOfFavoriteEntity(TRACKS, id);
       if (findedFavoriteTrackIndex !== -1) {
-        this.favsService.deleteFavoriteTrackByIndex(findedFavoriteTrackIndex);
+        this.dbService.deleteFavoriteEntityByIndex(TRACKS, findedFavoriteTrackIndex);
         res.status(NO_CONTENT).send();
       } else {
         res.status(NOT_FOUND).send(NOT_FOUND_FAVORITE_TRACK);
@@ -68,27 +61,27 @@ export class FavsController {
     }
   }
 
-  @Post(`${FAVORITES}/${ALBUM}/:id`)
+  @Post(`${ALBUM}/:id`)
   addAlbumToFavorites(@Res() res: Response, @Param() { id }: ParamsId) {
     if (!validate(id)) res.status(BAD_REQUEST).send(WRONG_ALBUM_ID);
     else {
-      const findedAlbum = this.albumService.getAlbumById(id);
+      const findedAlbum = this.dbService.getEntityById(ALBUMS, id);
       if (!findedAlbum) {
         res.status(UNPROCESSABLE_ENTITY).send(NOT_FOUND_ALBUM);
       } else {
-        this.favsService.setAlbumToFavorites(findedAlbum);
+        this.dbService.pushEntityToFavorites(ALBUMS, findedAlbum);
         res.status(CREATED).send(ADD_ALBUM_TO_FAVORITES);
       }
     }
   }
 
-  @Delete(`${FAVORITES}/${ALBUM}/:id`)
+  @Delete(`${ALBUM}/:id`)
   deleteAlbumFromFavorites(@Res() res: Response, @Param() { id }: ParamsId) {
     if (!validate(id)) res.status(BAD_REQUEST).send(WRONG_ALBUM_ID);
     else {
-      const findedFavoriteAlbumIndex = this.favsService.getIndexFavoriteAlbumById(id);
+      const findedFavoriteAlbumIndex = this.dbService.getIndexOfFavoriteEntity(ALBUMS, id);
       if (findedFavoriteAlbumIndex !== -1) {
-        this.favsService.deleteFavoriteAlbumByIndex(findedFavoriteAlbumIndex);
+        this.dbService.deleteFavoriteEntityByIndex(ALBUMS, findedFavoriteAlbumIndex);
         res.status(NO_CONTENT).send();
       } else {
         res.status(NOT_FOUND).send(NOT_FOUND_FAVORITE_ALBUM);
@@ -96,27 +89,27 @@ export class FavsController {
     }
   }
 
-  @Post(`${FAVORITES}/${ARTIST}/:id`)
+  @Post(`${ARTIST}/:id`)
   addArtistToFavorites(@Res() res: Response, @Param() { id }: ParamsId) {
     if (!validate(id)) res.status(BAD_REQUEST).send(WRONG_ARTIST_ID);
     else {
-      const findedArtist = this.artistService.getArtistById(id);
+      const findedArtist = this.dbService.getEntityById(ARTISTS, id);
       if (!findedArtist) {
         res.status(UNPROCESSABLE_ENTITY).send(NOT_FOUND_ARTIST);
       } else {
-        this.favsService.setArtistToFavorites(findedArtist);
+        this.dbService.pushEntityToFavorites(ARTISTS, findedArtist);
         res.status(CREATED).send(ADD_ARTIST_TO_FAVORITES);
       }
     }
   }
 
-  @Delete(`${FAVORITES}/${ARTIST}/:id`)
+  @Delete(`${ARTIST}/:id`)
   deleteArtistFromFavorites(@Res() res: Response, @Param() { id }: ParamsId) {
     if (!validate(id)) res.status(BAD_REQUEST).send(WRONG_ARTIST_ID);
     else {
-      const findedFavoriteArtistIndex = this.favsService.getIndexFavoriteArtistById(id);
+      const findedFavoriteArtistIndex = this.dbService.getIndexOfFavoriteEntity(ARTISTS, id);
       if (findedFavoriteArtistIndex !== -1) {
-        this.favsService.deleteFavoriteArtistByIndex(findedFavoriteArtistIndex);
+        this.dbService.deleteFavoriteEntityByIndex(ARTISTS, findedFavoriteArtistIndex);
         res.status(NO_CONTENT).send();
       } else {
         res.status(NOT_FOUND).send(NOT_FOUND_FAVORITES_ARTIST);
