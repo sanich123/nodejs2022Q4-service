@@ -1,14 +1,14 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Res } from '@nestjs/common';
 import { Response } from 'express';
-import { User, ParamsId } from './types';
-import { MESSAGES, PATHS } from 'src/utils/const';
-import { CreateUserDto, UpdatePasswordDto } from './user.dto';
-import { validate } from 'uuid';
+import { MESSAGES, PATHS, PLACES } from 'src/utils/const';
+import { CreateUserDto, UpdatePasswordDto, User } from './user.dto';
 import { DatabaseService } from 'src/database/database.service';
+import { ParamsId } from 'src/app/params-validation';
 
 const { USER } = PATHS;
-const { BAD_REQUEST, CREATED, NOT_FOUND, FORBIDDEN, OK, NO_CONTENT } = HttpStatus;
-const { WRONG_ID, NOT_FOUND_USER, WRONG_PASSWORD, EMPTY_FIELDS } = MESSAGES;
+const { USERS } = PLACES;
+const { CREATED, NOT_FOUND, FORBIDDEN, OK, NO_CONTENT } = HttpStatus;
+const { NOT_FOUND_USER, WRONG_PASSWORD } = MESSAGES;
 
 @Controller(USER)
 export class UserController {
@@ -16,60 +16,43 @@ export class UserController {
 
   @Get()
   getUsers(): User[] {
-    return this.dbService.getAllEntities('users');
+    return this.dbService.getAllEntities(USERS);
   }
 
-  @Get(`:id`)
+  @Get(':id')
   getUserById(@Param() { id }: ParamsId, @Res() response: Response) {
-    if (!validate(id)) response.status(BAD_REQUEST).send(WRONG_ID);
-    else {
-      const findedUser = this.dbService.getEntityById('users', id);
-      if (!findedUser) {
-        response.status(NOT_FOUND).send(NOT_FOUND_USER);
-      } else {
-        response.send(findedUser);
-      }
-    }
+    const findedUser = this.dbService.getEntityById(USERS, id);
+    !findedUser ? response.status(NOT_FOUND).send(NOT_FOUND_USER) : response.send(findedUser);
   }
 
-  @Put(`:id`)
+  @Put(':id')
   changePassword(
     @Body() { oldPassword, newPassword }: UpdatePasswordDto,
     @Param() { id }: ParamsId,
     @Res() response: Response,
   ) {
-    if (!validate(id)) response.status(BAD_REQUEST).send(WRONG_ID);
-    else if (!oldPassword || !newPassword) response.status(BAD_REQUEST).send(EMPTY_FIELDS);
+    const findedIndex = this.dbService.getIndexEntityById(USERS, id);
+    if (findedIndex === -1) response.status(NOT_FOUND).send(NOT_FOUND_USER);
     else {
-      const findedIndex = this.dbService.getIndexEntityById('users', id);
-      if (findedIndex === -1) response.status(NOT_FOUND).send(NOT_FOUND_USER);
-      else if (findedIndex !== -1) {
-        const { password } = this.dbService.getAllEntities('users')[findedIndex];
-        if (password !== oldPassword) {
-          response.status(FORBIDDEN).send(WRONG_PASSWORD);
-        } else {
-          const updatedUser = this.dbService.updatePassword('users', findedIndex, newPassword);
-          response.status(OK).send(updatedUser);
-        }
-      }
+      const { password } = this.dbService.getAllEntities(USERS)[findedIndex];
+      password !== oldPassword
+        ? response.status(FORBIDDEN).send(WRONG_PASSWORD)
+        : response.status(OK).send(this.dbService.updatePassword(USERS, findedIndex, newPassword));
     }
   }
 
   @Post()
   @HttpCode(CREATED)
-  createUser(@Body() { login, password }: CreateUserDto, @Res() res: Response) {
-    !login || !password
-      ? res.status(BAD_REQUEST).send(MESSAGES.BAD_BODY)
-      : res.status(CREATED).send(this.dbService.setNewUser({ login, password }));
+  createUser(@Body() { login, password }: CreateUserDto) {
+    return this.dbService.setNewUser({ login, password });
   }
 
-  @Delete(`:id`)
+  @Delete(':id')
   deleteUser(@Param() { id }: ParamsId, @Res() response: Response) {
-    const findedIndex = this.dbService.getIndexEntityById('users', id);
-    if (!validate(id)) response.status(BAD_REQUEST).send(WRONG_ID);
-    else if (findedIndex === -1) response.status(NOT_FOUND).send(NOT_FOUND_USER);
+    const findedIndex = this.dbService.getIndexEntityById(USERS, id);
+    if (findedIndex === -1) response.status(NOT_FOUND).send(NOT_FOUND_USER);
     else {
-      this.dbService.deleteEntityByIndex('users', findedIndex);
+      this.dbService.deleteEntityByIndex(USERS, findedIndex);
       response.status(NO_CONTENT).send();
     }
   }

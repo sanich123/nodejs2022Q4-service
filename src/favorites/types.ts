@@ -1,6 +1,6 @@
-import { Album } from 'src/album/types';
-import { Artist } from 'src/artist/types';
-import { Track } from 'src/track/types';
+import { Album } from 'src/album/album.dto';
+import { Artist } from 'src/artist/artist.dto';
+import { Track } from 'src/track/track.dto';
 
 export interface Favorites {
   artists: Artist[];

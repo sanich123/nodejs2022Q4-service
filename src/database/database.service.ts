@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { Album } from 'src/album/types';
-import { Artist } from 'src/artist/types';
+import { Album } from 'src/album/album.dto';
+import { Artist } from 'src/artist/artist.dto';
 import { Favorites } from 'src/favorites/types';
-import { Track } from 'src/track/types';
-import { User } from 'src/user/types';
-import { CreateUserDto } from 'src/user/user.dto';
+import { Track } from 'src/track/track.dto';
+
+import { CreateUserDto, User } from 'src/user/user.dto';
 import { v4 } from 'uuid';
 
 @Injectable()
