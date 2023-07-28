@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Res,
-  Param,
-  Delete,
-} from '@nestjs/common/decorators';
+import { Controller, Get, Post, Res, Param, Delete } from '@nestjs/common/decorators';
 import { MESSAGES, PATHS, PLACES } from 'src/utils/const';
 import { HttpStatus } from '@nestjs/common';
 import { Response } from 'express';
@@ -49,15 +42,9 @@ export class FavsController {
 
   @Delete(`${TRACK}/:id`)
   deleteTrackFromFavorites(@Res() res: Response, @Param() { id }: ParamsId) {
-    const findedFavoriteTrackIndex = this.dbService.getIndexOfFavoriteEntity(
-      TRACKS,
-      id,
-    );
+    const findedFavoriteTrackIndex = this.dbService.getIndexOfFavoriteEntity(TRACKS, id);
     if (findedFavoriteTrackIndex !== -1) {
-      this.dbService.deleteFavoriteEntityByIndex(
-        TRACKS,
-        findedFavoriteTrackIndex,
-      );
+      this.dbService.deleteFavoriteEntityByIndex(TRACKS, findedFavoriteTrackIndex);
       res.status(NO_CONTENT).send();
     } else {
       res.status(NOT_FOUND).send(NOT_FOUND_FAVORITE_TRACK);
@@ -77,15 +64,9 @@ export class FavsController {
 
   @Delete(`${ALBUM}/:id`)
   deleteAlbumFromFavorites(@Res() res: Response, @Param() { id }: ParamsId) {
-    const findedFavoriteAlbumIndex = this.dbService.getIndexOfFavoriteEntity(
-      ALBUMS,
-      id,
-    );
+    const findedFavoriteAlbumIndex = this.dbService.getIndexOfFavoriteEntity(ALBUMS, id);
     if (findedFavoriteAlbumIndex !== -1) {
-      this.dbService.deleteFavoriteEntityByIndex(
-        ALBUMS,
-        findedFavoriteAlbumIndex,
-      );
+      this.dbService.deleteFavoriteEntityByIndex(ALBUMS, findedFavoriteAlbumIndex);
       res.status(NO_CONTENT).send();
     } else {
       res.status(NOT_FOUND).send(NOT_FOUND_FAVORITE_ALBUM);
@@ -105,15 +86,9 @@ export class FavsController {
 
   @Delete(`${ARTIST}/:id`)
   deleteArtistFromFavorites(@Res() res: Response, @Param() { id }: ParamsId) {
-    const findedFavoriteArtistIndex = this.dbService.getIndexOfFavoriteEntity(
-      ARTISTS,
-      id,
-    );
+    const findedFavoriteArtistIndex = this.dbService.getIndexOfFavoriteEntity(ARTISTS, id);
     if (findedFavoriteArtistIndex !== -1) {
-      this.dbService.deleteFavoriteEntityByIndex(
-        ARTISTS,
-        findedFavoriteArtistIndex,
-      );
+      this.dbService.deleteFavoriteEntityByIndex(ARTISTS, findedFavoriteArtistIndex);
       res.status(NO_CONTENT).send();
     } else {
       res.status(NOT_FOUND).send(NOT_FOUND_FAVORITES_ARTIST);

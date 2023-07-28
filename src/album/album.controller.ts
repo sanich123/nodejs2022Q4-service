@@ -1,14 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Res,
-  Param,
-  Put,
-  Delete,
-  HttpCode,
-} from '@nestjs/common/decorators';
+import { Body, Controller, Get, Post, Res, Param, Put, Delete, HttpCode } from '@nestjs/common/decorators';
 import { MESSAGES, PATHS, PLACES, PROPS_TO_DELETE } from 'src/utils/const';
 import { CreateAlbumDto } from './album.dto';
 import { Response } from 'express';
@@ -40,24 +30,14 @@ export class AlbumController {
   @Get(':id')
   getAlbumById(@Param() { id }: ParamsId, @Res() res: Response) {
     const findedAlbum = this.dbService.getEntityById(ALBUMS, id);
-    findedAlbum
-      ? res.status(OK).send(findedAlbum)
-      : res.status(NOT_FOUND).send(NOT_FOUND_ALBUM);
+    findedAlbum ? res.status(OK).send(findedAlbum) : res.status(NOT_FOUND).send(NOT_FOUND_ALBUM);
   }
 
   @Put(':id')
-  updateAlbumById(
-    @Body() albumDto: CreateAlbumDto,
-    @Param() { id }: ParamsId,
-    @Res() res: Response,
-  ) {
+  updateAlbumById(@Body() albumDto: CreateAlbumDto, @Param() { id }: ParamsId, @Res() res: Response) {
     const albumIndex = this.dbService.getIndexEntityById(ALBUMS, id);
     albumIndex !== -1
-      ? res
-          .status(OK)
-          .send(
-            this.dbService.updateEntityByIndex(ALBUMS, albumIndex, albumDto),
-          )
+      ? res.status(OK).send(this.dbService.updateEntityByIndex(ALBUMS, albumIndex, albumDto))
       : res.status(NOT_FOUND).send(NOT_FOUND_ALBUM);
   }
 

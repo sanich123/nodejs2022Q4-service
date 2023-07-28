@@ -6,11 +6,7 @@ import { CreateTrackDto, Track } from 'src/track/track.dto';
 import { CreateUserDto, User } from 'src/user/user.dto';
 import { v4 } from 'uuid';
 
-type EntityType =
-  | CreateUserDto
-  | CreateAlbumDto
-  | CreateArtistDto
-  | CreateTrackDto;
+type EntityType = CreateUserDto | CreateAlbumDto | CreateArtistDto | CreateTrackDto;
 
 @Injectable()
 export class DatabaseService {
@@ -78,8 +74,6 @@ export class DatabaseService {
   }
 
   public deleteFavoriteEntityById(place: string, entityId: string) {
-    this.favorites[place] = this.favorites[place].filter(
-      ({ id }) => id !== entityId,
-    );
+    this.favorites[place] = this.favorites[place].filter(({ id }) => id !== entityId);
   }
 }

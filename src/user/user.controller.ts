@@ -1,15 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Param,
-  Post,
-  Put,
-  Res,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { MESSAGES, PATHS, PLACES } from 'src/utils/const';
 import { CreateUserDto, UpdatePasswordDto, User } from './user.dto';
@@ -33,9 +22,7 @@ export class UserController {
   @Get(':id')
   getUserById(@Param() { id }: ParamsId, @Res() response: Response) {
     const findedUser = this.dbService.getEntityById(USERS, id);
-    !findedUser
-      ? response.status(NOT_FOUND).send(NOT_FOUND_USER)
-      : response.send(findedUser);
+    !findedUser ? response.status(NOT_FOUND).send(NOT_FOUND_USER) : response.send(findedUser);
   }
 
   @Put(':id')
@@ -50,11 +37,7 @@ export class UserController {
       const { password } = this.dbService.getAllEntities(USERS)[findedIndex];
       password !== oldPassword
         ? response.status(FORBIDDEN).send(WRONG_PASSWORD)
-        : response
-            .status(OK)
-            .send(
-              this.dbService.updatePassword(USERS, findedIndex, newPassword),
-            );
+        : response.status(OK).send(this.dbService.updatePassword(USERS, findedIndex, newPassword));
     }
   }
 
