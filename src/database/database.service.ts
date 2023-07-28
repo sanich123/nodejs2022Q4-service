@@ -1,11 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { Album } from 'src/album/album.dto';
-import { Artist } from 'src/artist/artist.dto';
+import { Album, CreateAlbumDto } from 'src/album/album.dto';
+import { Artist, CreateArtistDto } from 'src/artist/artist.dto';
 import { Favorites } from 'src/favorites/types';
-import { Track } from 'src/track/track.dto';
-
+import { CreateTrackDto, Track } from 'src/track/track.dto';
 import { CreateUserDto, User } from 'src/user/user.dto';
 import { v4 } from 'uuid';
+
+type EntityType =
+  | CreateUserDto
+  | CreateAlbumDto
+  | CreateArtistDto
+  | CreateTrackDto;
 
 @Injectable()
 export class DatabaseService {
@@ -21,7 +26,7 @@ export class DatabaseService {
   public getAllEntities(place: string) {
     return this[place];
   }
-  public pushNewEntity(place: string, entity: any) {
+  public pushNewEntity(place: string, entity: EntityType) {
     const modifiedEntity = { id: v4(), ...entity };
     this[place].push(modifiedEntity);
     return modifiedEntity;
@@ -59,10 +64,7 @@ export class DatabaseService {
   }
   public deletePropertyById(place: string, id: string, property: string) {
     this[place].map((entity) => {
-      if (entity[property] === id) {
-        entity[property] = null;
-      }
-      return entity;
+      if (entity[property] === id) entity[property] = null;
     });
   }
   public pushEntityToFavorites(place: string, entity: any) {
@@ -76,6 +78,8 @@ export class DatabaseService {
   }
 
   public deleteFavoriteEntityById(place: string, entityId: string) {
-    this.favorites[place] = this.favorites[place].filter(({ id }) => id !== entityId);
+    this.favorites[place] = this.favorites[place].filter(
+      ({ id }) => id !== entityId,
+    );
   }
 }

@@ -1,4 +1,15 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+  Res,
+} from '@nestjs/common';
 import { MESSAGES, PATHS, PLACES } from 'src/utils/const';
 import { CreateTrackDto } from './track.dto';
 import { Response } from 'express';
@@ -27,15 +38,25 @@ export class TrackController {
   @Get(':id')
   getTrackById(@Param() { id }: ParamsId, @Res() res: Response) {
     const findedTrack = this.dbService.getEntityById(TRACKS, id);
-    !findedTrack ? res.status(NOT_FOUND).send(NOT_FOUND_TRACK) : res.status(OK).send(findedTrack);
+    !findedTrack
+      ? res.status(NOT_FOUND).send(NOT_FOUND_TRACK)
+      : res.status(OK).send(findedTrack);
   }
 
   @Put(':id')
-  updateTrackById(@Body() trackDto: CreateTrackDto, @Param() { id }: ParamsId, @Res() res: Response) {
+  updateTrackById(
+    @Body() trackDto: CreateTrackDto,
+    @Param() { id }: ParamsId,
+    @Res() res: Response,
+  ) {
     const findedIndex = this.dbService.getIndexEntityById(TRACKS, id);
     findedIndex === -1
       ? res.status(NOT_FOUND).send(NOT_FOUND_TRACK)
-      : res.status(OK).send(this.dbService.updateEntityByIndex(TRACKS, findedIndex, trackDto));
+      : res
+          .status(OK)
+          .send(
+            this.dbService.updateEntityByIndex(TRACKS, findedIndex, trackDto),
+          );
   }
 
   @Delete(':id')

@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Post, Res, Param, Put, Delete, HttpCode } from '@nestjs/common/decorators';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Res,
+  Param,
+  Put,
+  Delete,
+  HttpCode,
+} from '@nestjs/common/decorators';
 import { MESSAGES, PATHS, PLACES, PROPS_TO_DELETE } from 'src/utils/const';
 import { CreateArtistDto } from './artist.dto';
 import { Response } from 'express';
@@ -30,14 +40,24 @@ export class ArtistController {
   @Get(':id')
   getArtistById(@Param() { id }: ParamsId, @Res() res: Response) {
     const findedArtist = this.dbService.getEntityById(ARTISTS, id);
-    findedArtist ? res.status(OK).send(findedArtist) : res.status(NOT_FOUND).send(NOT_FOUND_ARTIST);
+    findedArtist
+      ? res.status(OK).send(findedArtist)
+      : res.status(NOT_FOUND).send(NOT_FOUND_ARTIST);
   }
 
   @Put(':id')
-  updateArtistByIndex(@Body() artistDto: CreateArtistDto, @Param() { id }: ParamsId, @Res() res: Response) {
+  updateArtistByIndex(
+    @Body() artistDto: CreateArtistDto,
+    @Param() { id }: ParamsId,
+    @Res() res: Response,
+  ) {
     const artistIndex = this.dbService.getIndexEntityById(ARTISTS, id);
     artistIndex !== -1
-      ? res.status(OK).send(this.dbService.updateEntityByIndex(ARTISTS, artistIndex, artistDto))
+      ? res
+          .status(OK)
+          .send(
+            this.dbService.updateEntityByIndex(ARTISTS, artistIndex, artistDto),
+          )
       : res.status(NOT_FOUND).send(NOT_FOUND_ARTIST);
   }
 
@@ -48,7 +68,9 @@ export class ArtistController {
       res.status(NOT_FOUND).send(NOT_FOUND_ARTIST);
     } else {
       this.dbService.deleteEntityByIndex(ARTISTS, findedIndex);
-      [TRACKS, ALBUMS].map((place) => this.dbService.deletePropertyById(place, id, artistId));
+      [TRACKS, ALBUMS].map((place) =>
+        this.dbService.deletePropertyById(place, id, artistId),
+      );
       this.dbService.deleteFavoriteEntityById(ARTISTS, id);
       res.status(NO_CONTENT).send();
     }
