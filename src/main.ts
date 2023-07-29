@@ -9,6 +9,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   SwaggerModule.setup('doc', app, document);
   app.useGlobalPipes(new ValidationPipe());
+  console.log(`App is listening on ${PORT}`);
   await app.listen(PORT);
 }
 bootstrap();
