@@ -1,59 +1,57 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Res } from '@nestjs/common';
 import { Response } from 'express';
-import { MESSAGES, PATHS, PLACES } from 'src/utils/const';
-import { CreateUserDto, UpdatePasswordDto, User } from './user.dto';
+import { MESSAGES, PATHS } from 'src/utils/const';
+import { CreateUserDto, UpdatePasswordDto } from './user.dto';
 import { DatabaseService } from 'src/database/database.service';
-import { ParamsId } from 'src/app/params-validation';
+import { UserService } from './user.service';
 
 const { USER } = PATHS;
-const { USERS } = PLACES;
 const { CREATED, NOT_FOUND, FORBIDDEN, OK, NO_CONTENT } = HttpStatus;
 const { NOT_FOUND_USER, WRONG_PASSWORD } = MESSAGES;
 
 @Controller(USER)
 export class UserController {
-  constructor(private readonly dbService: DatabaseService) {}
+  constructor(private readonly dbService: DatabaseService, private readonly userService: UserService) {}
 
   @Get()
-  getUsers(): User[] {
-    return this.dbService.getAllEntities(USERS);
+  getUsers() {
+    return this.userService.findAll();
   }
 
   @Get(':id')
-  getUserById(@Param() { id }: ParamsId, @Res() response: Response) {
-    const findedUser = this.dbService.getEntityById(USERS, id);
+  async getUserById(@Param('id') id: string, @Res() response: Response) {
+    const findedUser = await this.userService.findOne(id);
     !findedUser ? response.status(NOT_FOUND).send(NOT_FOUND_USER) : response.send(findedUser);
   }
 
   @Put(':id')
-  changePassword(
+  async changePassword(
     @Body() { oldPassword, newPassword }: UpdatePasswordDto,
-    @Param() { id }: ParamsId,
+    @Param('id') id: string,
     @Res() response: Response,
   ) {
-    const findedIndex = this.dbService.getIndexEntityById(USERS, id);
-    if (findedIndex === -1) response.status(NOT_FOUND).send(NOT_FOUND_USER);
+    const findedUser = await this.userService.findOne(id);
+    if (!findedUser) response.status(NOT_FOUND).send(NOT_FOUND_USER);
     else {
-      const { password } = this.dbService.getAllEntities(USERS)[findedIndex];
-      password !== oldPassword
-        ? response.status(FORBIDDEN).send(WRONG_PASSWORD)
-        : response.status(OK).send(this.dbService.updatePassword(USERS, findedIndex, newPassword));
+      const { password } = findedUser;
+      if (password !== oldPassword) {
+        response.status(FORBIDDEN).send(WRONG_PASSWORD);
+      } else {
+        const updatedUser = await this.userService.updatePassword(newPassword, id);
+        response.status(OK).send(updatedUser);
+      }
     }
   }
 
   @Post()
   @HttpCode(CREATED)
-  createUser(@Body() { login, password }: CreateUserDto) {
-    return this.dbService.setNewUser({ login, password });
+  async createUser(@Body() createUserDto: CreateUserDto) {
+    return await this.userService.createUser(createUserDto);
   }
 
   @Delete(':id')
-  deleteUser(@Param() { id }: ParamsId, @Res() response: Response) {
-    const findedIndex = this.dbService.getIndexEntityById(USERS, id);
-    if (findedIndex === -1) response.status(NOT_FOUND).send(NOT_FOUND_USER);
-    else {
-      this.dbService.deleteEntityByIndex(USERS, findedIndex);
-      response.status(NO_CONTENT).send();
-    }
+  async deleteUser(@Param('id') id: string, @Res() response: Response) {
+    const findedUser = await this.userService.deleteUser(id);
+    !findedUser ? response.status(NOT_FOUND).send(NOT_FOUND_USER) : response.status(NO_CONTENT).send();
   }
 }
