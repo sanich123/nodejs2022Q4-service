@@ -9,6 +9,8 @@ async function main() {
   const id4 = v4();
   const id5 = v4();
   const id6 = v4();
+  const id7 = v4();
+  const id8 = v4();
 
   const user1 = await prisma.user.upsert({
     where: {
@@ -68,7 +70,29 @@ async function main() {
     },
   });
 
-  console.log({ user1, user2, artist1, artist2, album1, album2 });
+  const track1 = await prisma.track.upsert({
+    where: { id: id7 },
+    update: { artistIdentity: artist2.id, albumIdentity: album2.id },
+    create: {
+      name: 'First movemento',
+      duration: 235,
+      artistIdentity: artist2.id,
+      albumIdentity: album2.id,
+    },
+  });
+
+  const track2 = await prisma.track.upsert({
+    where: { id: id8 },
+    update: { artistIdentity: artist2.id, albumIdentity: album2.id },
+    create: {
+      name: 'Second movemento',
+      duration: 123,
+      artistIdentity: artist2.id,
+      albumIdentity: album2.id,
+    },
+  });
+
+  console.log({ user1, user2, artist1, artist2, album1, album2, track1, track2 });
 }
 
 main()

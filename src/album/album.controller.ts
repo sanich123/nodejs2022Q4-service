@@ -2,7 +2,6 @@ import { Body, Controller, Get, Post, Param, Put, Delete, HttpCode } from '@nest
 import { MESSAGES, PATHS } from 'src/utils/const';
 import { CreateAlbumDto } from './album.dto';
 import { HttpStatus } from '@nestjs/common';
-import { DatabaseService } from 'src/database/database.service';
 import { ParamsId } from 'src/app/params-validation';
 import { AlbumService } from './album.service';
 import { throwNotFoundException } from 'src/utils/utils';
@@ -14,7 +13,7 @@ const { NOT_FOUND_ALBUM } = MESSAGES;
 
 @Controller(ALBUM)
 export class AlbumController {
-  constructor(private readonly dbService: DatabaseService, private readonly albumService: AlbumService) {}
+  constructor(private readonly albumService: AlbumService) {}
 
   @Get()
   async getAlbums() {
