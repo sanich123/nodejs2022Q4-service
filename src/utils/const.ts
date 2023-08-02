@@ -1,3 +1,5 @@
+import { HttpStatus } from '@nestjs/common';
+
 export const PATHS = {
   USER: 'user',
   TRACK: 'track',
@@ -32,4 +34,10 @@ export const PLACES = {
 export const PROPS_TO_DELETE = {
   artistId: 'artistId',
   albumId: 'albumId',
+};
+
+export const MAP_ERRORS = {
+  P2000: HttpStatus.BAD_REQUEST,
+  P2002: HttpStatus.CONFLICT,
+  P2025: HttpStatus.NOT_FOUND,
 };

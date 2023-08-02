@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { CreateUserDto } from './user.dto';
+import { getTimeStampFromTime } from 'src/utils/utils';
 
 @Injectable()
 export class UserService {
@@ -13,9 +15,11 @@ export class UserService {
     return this.prisma.user.findUnique({ where: { id } });
   }
 
-  async createUser(createUserDto) {
+  async createUser(createUserDto: CreateUserDto) {
     const { id, updatedAt, createdAt, login, version } = await this.prisma.user.create({ data: createUserDto });
-    return { id, updatedAt, createdAt, login, version };
+    const tsCreatedAt = getTimeStampFromTime(createdAt);
+    const tsUpdatedAt = getTimeStampFromTime(updatedAt);
+    return { id, updatedAt: tsCreatedAt, createdAt: tsUpdatedAt, login, version };
   }
 
   async deleteUser(id: string) {
@@ -27,6 +31,8 @@ export class UserService {
       where: { id: paramsId },
       data: { password: newPassword, version: { increment: 1 } },
     });
-    return { login, version, createdAt, updatedAt, id };
+    const tsCreatedAt = getTimeStampFromTime(createdAt);
+    const tsUpdatedAt = getTimeStampFromTime(updatedAt);
+    return { login, version, createdAt: tsCreatedAt, updatedAt: tsUpdatedAt, id };
   }
 }

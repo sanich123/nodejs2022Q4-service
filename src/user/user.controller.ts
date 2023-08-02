@@ -1,17 +1,17 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Res } from '@nestjs/common';
-import { Response } from 'express';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put } from '@nestjs/common';
 import { MESSAGES, PATHS } from 'src/utils/const';
 import { CreateUserDto, UpdatePasswordDto } from './user.dto';
-import { DatabaseService } from 'src/database/database.service';
 import { UserService } from './user.service';
+import { ParamsId } from 'src/app/params-validation';
+import { throwForbiddenException, throwNotFoundException } from 'src/utils/utils';
 
 const { USER } = PATHS;
-const { CREATED, NOT_FOUND, FORBIDDEN, OK, NO_CONTENT } = HttpStatus;
+const { CREATED, NO_CONTENT } = HttpStatus;
 const { NOT_FOUND_USER, WRONG_PASSWORD } = MESSAGES;
 
 @Controller(USER)
 export class UserController {
-  constructor(private readonly dbService: DatabaseService, private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) {}
 
   @Get()
   getUsers() {
@@ -19,26 +19,20 @@ export class UserController {
   }
 
   @Get(':id')
-  async getUserById(@Param('id') id: string, @Res() response: Response) {
-    const findedUser = await this.userService.findOne(id);
-    !findedUser ? response.status(NOT_FOUND).send(NOT_FOUND_USER) : response.send(findedUser);
+  async getUserById(@Param() { id }: ParamsId) {
+    return (await this.userService.findOne(id)) ?? throwNotFoundException(NOT_FOUND_USER);
   }
 
   @Put(':id')
-  async changePassword(
-    @Body() { oldPassword, newPassword }: UpdatePasswordDto,
-    @Param('id') id: string,
-    @Res() response: Response,
-  ) {
+  async changePassword(@Body() { oldPassword, newPassword }: UpdatePasswordDto, @Param() { id }: ParamsId) {
     const findedUser = await this.userService.findOne(id);
-    if (!findedUser) response.status(NOT_FOUND).send(NOT_FOUND_USER);
+    if (!findedUser) throwNotFoundException(NOT_FOUND_USER);
     else {
       const { password } = findedUser;
       if (password !== oldPassword) {
-        response.status(FORBIDDEN).send(WRONG_PASSWORD);
+        throwForbiddenException(WRONG_PASSWORD);
       } else {
-        const updatedUser = await this.userService.updatePassword(newPassword, id);
-        response.status(OK).send(updatedUser);
+        return await this.userService.updatePassword(newPassword, id);
       }
     }
   }
@@ -50,8 +44,9 @@ export class UserController {
   }
 
   @Delete(':id')
-  async deleteUser(@Param('id') id: string, @Res() response: Response) {
+  @HttpCode(NO_CONTENT)
+  async deleteUser(@Param() { id }: ParamsId) {
     const findedUser = await this.userService.deleteUser(id);
-    !findedUser ? response.status(NOT_FOUND).send(NOT_FOUND_USER) : response.status(NO_CONTENT).send();
+    if (!findedUser) throwNotFoundException(NOT_FOUND_USER);
   }
 }
