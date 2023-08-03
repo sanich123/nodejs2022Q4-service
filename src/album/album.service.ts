@@ -9,7 +9,7 @@ export class AlbumService {
     return await this.prisma.album.findMany();
   }
   async findOne(id: string) {
-    return await this.prisma.album.findUnique({ where: { id } });
+    return await this.prisma.album.findUnique({ where: { id }, include: { artist: true } });
   }
   async createAlbum(createAlbumDto: CreateAlbumDto) {
     return await this.prisma.album.create({
