@@ -6,13 +6,34 @@ export class FavsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async getAllFavorites() {
-    const artists = await this.prisma.artist.findMany({ where: { isFavorite: true } });
-    const albums = await this.prisma.album.findMany({ where: { isFavorite: true } });
-    const tracks = await this.prisma.track.findMany({ where: { isFavorite: true } });
-    const artistsDTO = artists.length > 1 ? artists : { ...artists };
-    const albumsDTO = albums.length > 1 ? albums : { ...albums };
-    const tracksDTO = tracks.length > 1 ? tracks : { ...tracks };
-    return { artists: artistsDTO, albums: albumsDTO, tracks: tracksDTO };
+    const artists = await this.prisma.artist.findMany({
+      where: { isFavorite: true },
+      select: { name: true, id: true, grammy: true },
+    });
+    const albums = await this.prisma.album.findMany({
+      where: { isFavorite: true },
+      select: {
+        name: true,
+        year: true,
+        artistId: true,
+        id: true,
+      },
+    });
+    const tracks = await this.prisma.track.findMany({
+      where: { isFavorite: true },
+      select: {
+        id: true,
+        name: true,
+        duration: true,
+        artistId: true,
+        albumId: true,
+      },
+    });
+    return {
+      artists: artists,
+      albums: albums,
+      tracks: tracks,
+    };
   }
 
   async createFavEntity(entityId: string, place: string) {
