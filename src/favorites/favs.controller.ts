@@ -4,6 +4,7 @@ import { HttpStatus } from '@nestjs/common';
 import { Response } from 'express';
 import { DatabaseService } from 'src/database/database.service';
 import { ParamsId } from 'src/app/params-validation';
+import { FavsService } from './favs.service';
 
 const { FAVORITES, TRACK, ALBUM, ARTIST } = PATHS;
 const { FAVS, TRACKS, ALBUMS, ARTISTS } = PLACES;
@@ -22,7 +23,7 @@ const {
 
 @Controller(FAVORITES)
 export class FavsController {
-  constructor(private readonly dbService: DatabaseService) {}
+  constructor(private readonly dbService: DatabaseService, private readonly favsService: FavsService) {}
 
   @Get()
   getAllFavorites() {

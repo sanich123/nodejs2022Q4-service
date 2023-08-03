@@ -53,7 +53,7 @@ async function main() {
 
   const album1 = await prisma.album.upsert({
     where: { id: id5 },
-    update: { artistIdentity: artist2.id },
+    update: { artistId: artist2.id },
     create: {
       name: 'Symphony #5',
       year: 1859,
@@ -62,33 +62,33 @@ async function main() {
   });
   const album2 = await prisma.album.upsert({
     where: { id: id6 },
-    update: { artistIdentity: artist2.id },
+    update: { artistId: artist2.id },
     create: {
       name: 'Symphony #7',
       year: 1861,
-      artistIdentity: artist2.id,
+      artistId: artist2.id,
     },
   });
 
   const track1 = await prisma.track.upsert({
     where: { id: id7 },
-    update: { artistIdentity: artist2.id, albumIdentity: album2.id },
+    update: { artistId: artist2.id, albumId: album2.id },
     create: {
       name: 'First movemento',
       duration: 235,
-      artistIdentity: artist2.id,
-      albumIdentity: album2.id,
+      artistId: artist2.id,
+      albumId: album2.id,
     },
   });
 
   const track2 = await prisma.track.upsert({
     where: { id: id8 },
-    update: { artistIdentity: artist2.id, albumIdentity: album2.id },
+    update: { artistId: artist2.id, albumId: album2.id },
     create: {
       name: 'Second movemento',
       duration: 123,
-      artistIdentity: artist2.id,
-      albumIdentity: album2.id,
+      artistId: artist2.id,
+      albumId: album2.id,
     },
   });
 

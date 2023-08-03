@@ -1,7 +1,6 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put } from '@nestjs/common';
 import { MESSAGES, PATHS } from 'src/utils/const';
 import { CreateTrackDto } from './track.dto';
-import { DatabaseService } from 'src/database/database.service';
 import { ParamsId } from 'src/app/params-validation';
 import { TrackService } from './track.service';
 import { throwNotFoundException } from 'src/utils/utils';
@@ -12,7 +11,7 @@ const { NOT_FOUND_TRACK } = MESSAGES;
 
 @Controller(TRACK)
 export class TrackController {
-  constructor(private readonly dbService: DatabaseService, private readonly trackService: TrackService) {}
+  constructor(private readonly trackService: TrackService) {}
   @Get()
   getTracks() {
     return this.trackService.findAll();
