@@ -16,6 +16,7 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
+    "start:with-prisma-client": "npx prisma migrate reset && nest start --watch",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "formatAll": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix & prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "test": "jest --testMatch \"<rootDir>/*.spec.ts\" --config ./test/jest-e2e.json --noStackTrace --runInBand",

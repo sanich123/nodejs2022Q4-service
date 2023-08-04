@@ -1,21 +1,32 @@
+version: '3'
 services:
   home-library:
+    restart: always
     build: .
     ports:
-      - ${PORT}:${PORT}
+      - '4000:4000'
+    links:
+      - postgres:postgres
     depends_on:
       - postgres
     environment:
       - PORT=${PORT}
+    env_file:
+      - .env
   postgres:
     image: postgres:15.3
+    networks:
+      - postgres
     restart: always
-    environment:
+    environment: 
       - POSTGRES_USER=sanich123
       - POSTGRES_PASSWORD=secret_password
     volumes:
-      - postgres:/var/lib/postgresql/data
+      - /data/postgres:/data/postgres
     ports:
-      - 6500:5432
-volumes:
+      - '6500:5432'
+    env_file:
+      - .env
+networks:
   postgres:
+    driver: bridge
