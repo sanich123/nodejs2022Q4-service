@@ -1,20 +1,20 @@
 version: '3'
 services:
-  home-library:
+  nest-api:
+    container_name: nest-api
     restart: always
     build: .
     ports:
-      - '4000:4000'
-    links:
-      - postgres:postgres
+      - 4000:4000
     depends_on:
       - postgres
-    environment:
-      - PORT=${PORT}
     env_file:
       - .env
+    networks:
+      - postgres
   postgres:
     image: postgres:15.3
+    container_name: postgresprisma
     networks:
       - postgres
     restart: always
@@ -24,7 +24,7 @@ services:
     volumes:
       - /data/postgres:/data/postgres
     ports:
-      - '6500:5432'
+      - 5432:5432
     env_file:
       - .env
 networks:
