@@ -5,7 +5,7 @@ services:
     restart: always
     build: .
     ports:
-      - 4000:4000
+      - ${PORT}:${PORT}
     depends_on:
       - postgres
     env_file:
@@ -13,18 +13,15 @@ services:
     networks:
       - postgres
   postgres:
-    image: postgres:15.3
-    container_name: postgresprisma
+    image: postgres:15.3-bullseye
+    container_name: ${POSTGRES_NAME}
     networks:
       - postgres
     restart: always
-    environment: 
-      - POSTGRES_USER=sanich123
-      - POSTGRES_PASSWORD=secret_password
     volumes:
       - /data/postgres:/data/postgres
     ports:
-      - 5432:5432
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
     env_file:
       - .env
 networks:
