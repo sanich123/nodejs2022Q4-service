@@ -15,6 +15,10 @@ export class UserService {
     return this.prisma.user.findUnique({ where: { id } });
   }
 
+  async findOneByLogin(login: string) {
+    return this.prisma.user.findFirst({ where: { login } });
+  }
+
   async createUser(createUserDto: CreateUserDto) {
     const { id, updatedAt, createdAt, login, version } = await this.prisma.user.create({ data: createUserDto });
     const tsCreatedAt = getTimeStampFromTime(createdAt);
