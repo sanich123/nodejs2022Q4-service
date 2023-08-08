@@ -5,10 +5,11 @@ import { ValidationPipe } from '@nestjs/common';
 // import { document } from './app/parse-yaml';
 import { PrismaClientExceptionFilter } from 'nestjs-prisma';
 import { MAP_ERRORS } from './utils/const';
+import { getLogLevels } from './utils/log-levels';
 
 async function bootstrap() {
   const PORT = Number(process.env.PORT) || 4000;
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { logger: getLogLevels(process.env.NODE_ENV === 'production') });
 
   const { httpAdapter } = app.get(HttpAdapterHost);
   app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter, MAP_ERRORS));

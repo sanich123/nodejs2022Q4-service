@@ -5,7 +5,7 @@ import { getTimeStampFromTime } from 'src/utils/utils';
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async findAll() {
     return this.prisma.user.findMany();
