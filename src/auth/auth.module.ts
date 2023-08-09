@@ -4,13 +4,15 @@ import { AuthController } from './auth.controller';
 import { UserModule } from 'src/user/user.module';
 import { JwtModule } from '@nestjs/jwt';
 
+const { JWT_SECRET_KEY, TOKEN_EXPIRE_TIME } = process.env;
+
 @Module({
   imports: [
     UserModule,
     JwtModule.register({
       global: true,
-      secret: process.env.JWT_SECRET_KEY,
-      signOptions: { expiresIn: '2h' },
+      secret: JWT_SECRET_KEY,
+      signOptions: { expiresIn: TOKEN_EXPIRE_TIME },
     }),
   ],
   providers: [AuthService],

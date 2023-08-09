@@ -7,7 +7,6 @@ import { AlbumService } from './album.service';
 import { throwNotFoundException } from 'src/utils/utils';
 
 const { ALBUM } = PATHS;
-
 const { CREATED, NO_CONTENT } = HttpStatus;
 const { NOT_FOUND_ALBUM } = MESSAGES;
 
