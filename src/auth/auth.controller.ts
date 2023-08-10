@@ -5,7 +5,7 @@ import { CreateUserDto } from 'src/user/user.dto';
 import { Public } from './public';
 import { PATHS } from 'src/utils/const';
 
-const { AUTH, SIGNUP, LOGIN } = PATHS;
+const { AUTH, SIGNUP, LOGIN, REFRESH } = PATHS;
 
 @Controller(AUTH)
 export class AuthController {
@@ -23,4 +23,8 @@ export class AuthController {
   async logIn(@Body() { login, password }: CreateUserDto) {
     return await this.authService.logIn(login, password);
   }
+
+  @Public()
+  @Post(REFRESH)
+  async refreshTokens(@Body() {refreshToken})
 }

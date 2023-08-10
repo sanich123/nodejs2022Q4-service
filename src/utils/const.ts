@@ -9,6 +9,7 @@ export const PATHS = {
   LOGIN: 'login',
   SIGNUP: 'signup',
   AUTH: 'auth',
+  REFRESH: 'refresh',
 };
 
 export const MESSAGES = {
