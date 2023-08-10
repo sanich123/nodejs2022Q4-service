@@ -24,6 +24,7 @@ export class AuthService {
     if (!match) throw new UnauthorizedException(DIDNT_MATCH_PASSWORDS);
     const accessToken = await this.jwtService.signAsync({ id });
     const refreshToken = jwt.sign({ id }, JWT_SECRET_REFRESH_KEY, { expiresIn: ms(TOKEN_REFRESH_EXPIRE_TIME) });
+    await this.userService.updateRefreshToken(id, refreshToken);
 
     return {
       accessToken,

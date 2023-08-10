@@ -6,8 +6,8 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "prisma-migrate": "npx prisma migrate dev --name \"init\"",
-    "prisma-migrate-reset": "npx prisma migrate reset",
+    "prisma:migrate": "npx prisma migrate dev",
+    "prisma:migrate:reset": "npx prisma migrate reset --force",
     "prisma-seed": "npx prisma db seed",
     "prebuild": "rimraf dist",
     "build": "nest build",
