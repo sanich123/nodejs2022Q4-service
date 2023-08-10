@@ -3,9 +3,12 @@ import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { compare, hash } from 'bcrypt';
 import { MESSAGES } from 'src/utils/const';
+import * as jwt from 'jsonwebtoken';
+import * as ms from 'ms';
 
 const { NON_EXISTING_LOGIN, DIDNT_MATCH_PASSWORDS, ALREADY_EXIST_LOGIN } = MESSAGES;
 const { CRYPT_SALT } = process.env;
+const { JWT_SECRET_REFRESH_KEY, TOKEN_REFRESH_EXPIRE_TIME } = process.env;
 
 @Injectable()
 export class AuthService {
@@ -19,10 +22,12 @@ export class AuthService {
     const match = await compare(password, dbPassword);
 
     if (!match) throw new UnauthorizedException(DIDNT_MATCH_PASSWORDS);
-    const accessToken = await this.jwtService.signAsync({ id, login });
+    const accessToken = await this.jwtService.signAsync({ id });
+    const refreshToken = jwt.sign({ id }, JWT_SECRET_REFRESH_KEY, { expiresIn: ms(TOKEN_REFRESH_EXPIRE_TIME) });
 
     return {
       accessToken,
+      refreshToken,
     };
   }
 
