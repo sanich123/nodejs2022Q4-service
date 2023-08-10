@@ -4,6 +4,7 @@ import { HttpStatus } from '@nestjs/common';
 import { CreateUserDto } from 'src/user/user.dto';
 import { Public } from './public';
 import { PATHS } from 'src/utils/const';
+import { CreateRefreshTokenDto } from './auth.dto';
 
 const { AUTH, SIGNUP, LOGIN, REFRESH } = PATHS;
 
@@ -26,5 +27,7 @@ export class AuthController {
 
   @Public()
   @Post(REFRESH)
-  async refreshTokens(@Body() {refreshToken})
+  async refreshTokens(@Body() { refreshToken }: CreateRefreshTokenDto) {
+    return await this.authService.validateToken(refreshToken);
+  }
 }

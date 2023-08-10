@@ -21,6 +21,7 @@ export const MESSAGES = {
   NON_EXISTING_LOGIN: 'This login does not exist in database',
   DIDNT_MATCH_PASSWORDS: 'Password in the database does not equals received passwrod',
   ALREADY_EXIST_LOGIN: 'This login is already in a database',
+  WRONG_TOKEN: 'Token is invalid or expired',
 };
 
 export const MAP_ERRORS = {
