@@ -14,14 +14,15 @@ export class AuthService {
   async logIn(login: string, password: string) {
     const user = await this.userService.findOneByLogin(login);
     if (!user) throw new BadRequestException(NON_EXISTING_LOGIN);
+
     const { id, password: dbPassword } = user;
     const match = await compare(password, dbPassword);
-    if (!match) throw new UnauthorizedException(DIDNT_MATCH_PASSWORDS);
 
-    const payload = { userId: id, login };
+    if (!match) throw new UnauthorizedException(DIDNT_MATCH_PASSWORDS);
+    const accessToken = await this.jwtService.signAsync({ id, login });
 
     return {
-      accessToken: await this.jwtService.signAsync(payload),
+      accessToken,
     };
   }
 

@@ -13,7 +13,7 @@ export class AuthController {
 
   @Public()
   @Post(SIGNUP)
-  @HttpCode(HttpStatus.NO_CONTENT)
+  @HttpCode(HttpStatus.CREATED)
   async signUp(@Body() { login, password }: CreateUserDto) {
     return await this.authService.signUp(login, password);
   }

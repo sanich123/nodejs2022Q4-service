@@ -1,26 +1,25 @@
 import { PrismaClient } from '@prisma/client';
 import { v4 } from 'uuid';
+import { hash } from 'bcrypt';
+
+const { CRYPT_SALT } = process.env;
 
 const prisma = new PrismaClient();
+
 async function main() {
-  const id1 = v4();
-  const id2 = v4();
-  const id3 = v4();
-  const id4 = v4();
-  const id5 = v4();
-  const id6 = v4();
-  const id7 = v4();
-  const id8 = v4();
+  const ids: { [key: string]: string } = {};
+
+  for (let i = 1; i <= 8; i++) {
+    ids[`id${i}`] = v4();
+  }
+  const { id1, id2, id3, id4, id5, id6, id7, id8 } = ids;
 
   const user1 = await prisma.user.upsert({
-    where: {
-      id: id1,
-    },
+    where: { id: id1 },
     update: {},
     create: {
-      id: v4(),
       login: 'sanich123',
-      password: '7fwd7rlm',
+      password: await hash('7fwd7rlm', +CRYPT_SALT),
     },
   });
 
@@ -29,7 +28,7 @@ async function main() {
     update: {},
     create: {
       login: 'sanich143',
-      password: '17011987',
+      password: await hash('17011987', +CRYPT_SALT),
     },
   });
 
