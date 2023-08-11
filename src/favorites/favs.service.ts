@@ -1,11 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { MESSAGES } from 'src/utils/const';
 
 @Injectable()
 export class FavsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getAllFavorites() {
+  public async getAllFavorites() {
     const artists = await this.prisma.artist.findMany({
       where: { isFavorite: true },
       select: { name: true, id: true, grammy: true },
@@ -36,16 +37,24 @@ export class FavsService {
     };
   }
 
-  async createFavEntity(entityId: string, place: string) {
-    const updatedEntity = await this.prisma[place].update({ where: { id: entityId }, data: { isFavorite: true } });
-    const { id, name, grammy } = updatedEntity;
-    return { id, name, grammy };
+  public async createFavEntity(entityId: string, place: string) {
+    try {
+      const updatedEntity = await this.prisma[place].update({ where: { id: entityId }, data: { isFavorite: true } });
+      const { id, name, grammy } = updatedEntity;
+      return { id, name, grammy };
+    } catch (error) {
+      throw new NotFoundException(MESSAGES.NOT_FOUND_FAVORITE);
+    }
   }
 
-  async deleteFavEntity(id: string, place: string) {
-    return this.prisma[place].update({ where: { id }, data: { isFavorite: false } });
+  public async deleteFavEntity(id: string, place: string) {
+    try {
+      return this.prisma[place].update({ where: { id }, data: { isFavorite: false } });
+    } catch (error) {
+      throw new NotFoundException(MESSAGES.NOT_FOUND_FAVORITE);
+    }
   }
-  async checkExistenceById(id: string, place: string) {
+  public async checkExistenceById(id: string, place: string) {
     return this.prisma[place].findUnique({ where: { id } });
   }
 }

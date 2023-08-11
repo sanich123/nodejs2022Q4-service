@@ -1,28 +1,37 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateArtistDto } from './artist.dto';
+import { MESSAGES } from 'src/utils/const';
 
 @Injectable()
 export class ArtistService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll() {
+  public async findAll() {
     return await this.prisma.artist.findMany();
   }
 
-  async findOne(id: string) {
+  public async findOne(id: string) {
     return await this.prisma.artist.findUnique({ where: { id } });
   }
 
-  async createArtist(createArtistDto: CreateArtistDto) {
+  public async createArtist(createArtistDto: CreateArtistDto) {
     return await this.prisma.artist.create({ data: createArtistDto });
   }
 
-  async updateArtist(id: string, createArtistDto: CreateArtistDto) {
-    return await this.prisma.artist.update({ where: { id }, data: createArtistDto });
+  public async updateArtist(id: string, createArtistDto: CreateArtistDto) {
+    try {
+      return await this.prisma.artist.update({ where: { id }, data: createArtistDto });
+    } catch {
+      throw new NotFoundException(MESSAGES.NOT_FOUND_ARTIST);
+    }
   }
 
-  async deleteArtist(id: string) {
-    return await this.prisma.artist.delete({ where: { id } });
+  public async deleteArtist(id: string) {
+    try {
+      return await this.prisma.artist.delete({ where: { id } });
+    } catch {
+      throw new NotFoundException(MESSAGES.NOT_FOUND_ARTIST);
+    }
   }
 }

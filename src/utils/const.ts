@@ -18,6 +18,7 @@ export const MESSAGES = {
   NOT_FOUND_TRACK: 'We could not be able to find track with received id',
   NOT_FOUND_ARTIST: 'We could not be able to find artist with received id',
   NOT_FOUND_ALBUM: 'We could not be able to find album with received id',
+  NOT_FOUND_FAVORITE: 'We could not be able to find favorite entity with received id',
   NON_EXISTING_LOGIN: 'This login does not exist in database',
   DIDNT_MATCH_PASSWORDS: 'Password in the database does not equals received passwrod',
   ALREADY_EXIST_LOGIN: 'This login is already in a database',

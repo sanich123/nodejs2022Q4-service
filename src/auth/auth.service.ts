@@ -21,7 +21,7 @@ const { JWT_SECRET_REFRESH_KEY, TOKEN_REFRESH_EXPIRE_TIME } = process.env;
 export class AuthService {
   constructor(private readonly userService: UserService, private readonly jwtService: JwtService) {}
 
-  async logIn(login: string, password: string) {
+  public async logIn(login: string, password: string) {
     const user = await this.userService.findOneByLogin(login);
     if (!user) throw new BadRequestException(NON_EXISTING_LOGIN);
 
@@ -32,7 +32,7 @@ export class AuthService {
     return await this.getTokens(id);
   }
 
-  async signUp(login: string, password: string) {
+  public async signUp(login: string, password: string) {
     const user = await this.userService.findOneByLogin(login);
     if (user) throw new ConflictException(ALREADY_EXIST_LOGIN);
 
@@ -41,7 +41,7 @@ export class AuthService {
     return await this.userService.createUser({ login, password: hashedPassword });
   }
 
-  async validateToken(refreshToken: string) {
+  public async validateToken(refreshToken: string) {
     try {
       const { id } = await this.jwtService.verifyAsync(refreshToken);
       const user = await this.userService.findOne(id);
@@ -51,7 +51,7 @@ export class AuthService {
       if (!matchedRefreshToken) throw new ForbiddenException(WRONG_TOKEN);
       return await this.getTokens(id);
     } catch {
-      throw new UnauthorizedException('Invalid refresh token');
+      throw new UnauthorizedException(WRONG_TOKEN);
     }
   }
 

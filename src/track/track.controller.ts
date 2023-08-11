@@ -30,13 +30,12 @@ export class TrackController {
 
   @Put(':id')
   async updateTrackById(@Body() trackDto: CreateTrackDto, @Param() { id }: ParamsId) {
-    return this.trackService.updateTrack(id, trackDto);
+    return await this.trackService.updateTrack(id, trackDto);
   }
 
   @Delete(':id')
   @HttpCode(NO_CONTENT)
   async deleteTrackById(@Param() { id }: ParamsId) {
-    const findedTrack = await this.trackService.deleteTrack(id);
-    if (!findedTrack) throwNotFoundException(NOT_FOUND_TRACK);
+    return await this.trackService.deleteTrack(id);
   }
 }
