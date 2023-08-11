@@ -15,9 +15,6 @@ async function bootstrap() {
   process.on('uncaughtException', uncaughtErrorHandler);
   process.on('unhandledRejection', unhandledRejectionHandler);
   process.stdin.on('data', processStdinHandler);
-  process.on('SIGTERM', () => {
-    console.log('SIGTERM signal received.');
-  });
 
   const isProduction = NODE_ENV === 'production';
   const app = await NestFactory.create(AppModule, { logger: getLogLevels(isProduction) });
@@ -26,7 +23,7 @@ async function bootstrap() {
   app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapterHost.httpAdapter, MAP_ERRORS));
   app.useGlobalFilters(new AllExceptionsFilter(httpAdapterHost));
   app.useGlobalPipes(new ValidationPipe());
-  app.enableShutdownHooks();
+
   SwaggerModule.setup('doc', app, document);
 
   console.log(`App is listening on ${PORT}`);
