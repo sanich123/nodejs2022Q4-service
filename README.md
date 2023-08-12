@@ -26,4 +26,8 @@ and after installing dependencies is over:
 
 Tests will successfully pass.
 
+You can download my nest-api image by ```docker pull sanich123/project-nest-api```
+
+I hope it'll work:) But the image in docker hub, trust me
+
 Good luck!
