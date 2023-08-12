@@ -27,6 +27,7 @@ export class AuthService {
 
     const { id, password: dbPassword } = user;
     const match = await compare(password, dbPassword);
+    console.log(match);
 
     if (!match) throw new UnauthorizedException(DIDNT_MATCH_PASSWORDS);
     return await this.getTokens(id);
@@ -55,7 +56,7 @@ export class AuthService {
     }
   }
 
-  private async getTokens(id: string) {
+  async getTokens(id: string) {
     const accessToken = await this.jwtService.signAsync({ id });
     const refreshToken = jwt.sign({ id }, JWT_SECRET_REFRESH_KEY, { expiresIn: ms(TOKEN_REFRESH_EXPIRE_TIME) });
     await this.userService.updateRefreshToken(id, refreshToken);

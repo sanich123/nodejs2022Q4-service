@@ -7,7 +7,7 @@ import { PrismaClientExceptionFilter } from 'nestjs-prisma';
 import { MAP_ERRORS } from './utils/const';
 import { getLogLevels } from './utils/log-levels';
 import { processStdinHandler, uncaughtErrorHandler, unhandledRejectionHandler } from './utils/utils';
-import { AllExceptionsFilter } from './exceptions-filter/exceptions-filter';
+// import { AllExceptionsFilter } from './exceptions-filter/exceptions-filter';
 
 const { PORT, NODE_ENV } = process.env;
 
@@ -21,7 +21,7 @@ async function bootstrap() {
 
   const httpAdapterHost = app.get(HttpAdapterHost);
   app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapterHost.httpAdapter, MAP_ERRORS));
-  app.useGlobalFilters(new AllExceptionsFilter(httpAdapterHost));
+  // app.useGlobalFilters(new AllExceptionsFilter(httpAdapterHost));
   app.useGlobalPipes(new ValidationPipe());
 
   SwaggerModule.setup('doc', app, document);
