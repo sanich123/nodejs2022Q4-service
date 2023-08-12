@@ -5,6 +5,7 @@ import {
   UnauthorizedException,
   NotFoundException,
   ForbiddenException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
@@ -13,28 +14,44 @@ import { MESSAGES } from 'src/utils/const';
 import * as jwt from 'jsonwebtoken';
 import * as ms from 'ms';
 
-const { NON_EXISTING_LOGIN, DIDNT_MATCH_PASSWORDS, ALREADY_EXIST_LOGIN, WRONG_TOKEN, NOT_FOUND_USER } = MESSAGES;
-const { CRYPT_SALT } = process.env;
-const { JWT_SECRET_REFRESH_KEY, TOKEN_REFRESH_EXPIRE_TIME } = process.env;
+const {
+  NON_EXISTING_LOGIN,
+  DIDNT_MATCH_PASSWORDS,
+  ALREADY_EXIST_LOGIN,
+  WRONG_TOKEN,
+  NOT_FOUND_USER,
+  SIGN_TOKENS_ERROR,
+  HASHING_PASSWORD_ERROR,
+  COMPARING_PASSWORD_ERROR,
+} = MESSAGES;
+const { CRYPT_SALT, JWT_SECRET_REFRESH_KEY, TOKEN_REFRESH_EXPIRE_TIME } = process.env;
 
 @Injectable()
 export class AuthService {
   constructor(private readonly userService: UserService, private readonly jwtService: JwtService) {}
 
   async logIn(login: string, password: string) {
-    const user = await this.userService.findOneByLogin(login);
-    if (!user) throw new BadRequestException(NON_EXISTING_LOGIN);
-    const { id, password: dbPassword } = user;
-    const match = await compare(password, dbPassword);
-    if (!match) throw new UnauthorizedException(DIDNT_MATCH_PASSWORDS);
-    return await this.getTokens(id);
+    try {
+      const user = await this.userService.findOneByLogin(login);
+      if (!user) throw new BadRequestException(NON_EXISTING_LOGIN);
+      const { id, password: dbPassword } = user;
+      const match = await compare(password, dbPassword);
+      if (!match) throw new UnauthorizedException(DIDNT_MATCH_PASSWORDS);
+      return await this.getTokens(id);
+    } catch (error) {
+      throw new InternalServerErrorException(COMPARING_PASSWORD_ERROR);
+    }
   }
 
   async signUp(login: string, password: string) {
-    const user = await this.userService.findOneByLogin(login);
-    if (user) throw new ConflictException(ALREADY_EXIST_LOGIN);
-    const hashedPassword = await hash(password, +CRYPT_SALT);
-    return await this.userService.createUser({ login, password: hashedPassword });
+    try {
+      const user = await this.userService.findOneByLogin(login);
+      if (user) throw new ConflictException(ALREADY_EXIST_LOGIN);
+      const hashedPassword = await hash(password, +CRYPT_SALT);
+      return await this.userService.createUser({ login, password: hashedPassword });
+    } catch (error) {
+      throw new InternalServerErrorException(HASHING_PASSWORD_ERROR);
+    }
   }
 
   async validateToken(refreshToken: string) {
@@ -52,12 +69,13 @@ export class AuthService {
   }
 
   private async getTokens(id: string) {
-    const accessToken = await this.jwtService.signAsync({ id });
-    const refreshToken = jwt.sign({ id }, JWT_SECRET_REFRESH_KEY, { expiresIn: ms(TOKEN_REFRESH_EXPIRE_TIME) });
-    await this.userService.updateRefreshToken(id, refreshToken);
-    return {
-      accessToken,
-      refreshToken,
-    };
+    try {
+      const accessToken = await this.jwtService.signAsync({ id });
+      const refreshToken = jwt.sign({ id }, JWT_SECRET_REFRESH_KEY, { expiresIn: ms(TOKEN_REFRESH_EXPIRE_TIME) });
+      await this.userService.updateRefreshToken(id, refreshToken);
+      return { accessToken, refreshToken };
+    } catch (error) {
+      throw new InternalServerErrorException(SIGN_TOKENS_ERROR);
+    }
   }
 }
