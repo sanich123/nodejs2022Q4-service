@@ -1,37 +1,49 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateTrackDto } from './track.dto';
-import { MESSAGES } from 'src/utils/const';
+import { prismaErrorHandling } from 'src/utils/prisma-error-handling';
 
 @Injectable()
 export class TrackService {
   constructor(private readonly prisma: PrismaService) {}
 
-  public async findAll() {
-    return await this.prisma.track.findMany();
-  }
-
-  public async createTrack(createTrackDto: CreateTrackDto) {
-    return await this.prisma.track.create({ data: createTrackDto });
-  }
-
-  public async getOne(id: string) {
-    return await this.prisma.track.findUnique({ where: { id } });
-  }
-
-  public async updateTrack(id: string, createTrackDto: CreateTrackDto) {
+  async findAll() {
     try {
-      return await this.prisma.track.update({ where: { id }, data: createTrackDto });
+      return await this.prisma.track.findMany();
     } catch (error) {
-      throw new NotFoundException(MESSAGES.NOT_FOUND_TRACK);
+      prismaErrorHandling(error);
     }
   }
 
-  public async deleteTrack(id: string) {
+  async createTrack(createTrackDto: CreateTrackDto) {
+    try {
+      return await this.prisma.track.create({ data: createTrackDto });
+    } catch (error) {
+      prismaErrorHandling(error);
+    }
+  }
+
+  async getOne(id: string) {
+    try {
+      return await this.prisma.track.findUnique({ where: { id } });
+    } catch (error) {
+      prismaErrorHandling(error);
+    }
+  }
+
+  async updateTrack(id: string, createTrackDto: CreateTrackDto) {
+    try {
+      return await this.prisma.track.update({ where: { id }, data: createTrackDto });
+    } catch (error) {
+      prismaErrorHandling(error);
+    }
+  }
+
+  async deleteTrack(id: string) {
     try {
       return await this.prisma.track.delete({ where: { id } });
     } catch (error) {
-      throw new NotFoundException(MESSAGES.NOT_FOUND_TRACK);
+      prismaErrorHandling(error);
     }
   }
 }

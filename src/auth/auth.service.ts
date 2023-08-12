@@ -21,28 +21,23 @@ const { JWT_SECRET_REFRESH_KEY, TOKEN_REFRESH_EXPIRE_TIME } = process.env;
 export class AuthService {
   constructor(private readonly userService: UserService, private readonly jwtService: JwtService) {}
 
-  public async logIn(login: string, password: string) {
+  async logIn(login: string, password: string) {
     const user = await this.userService.findOneByLogin(login);
     if (!user) throw new BadRequestException(NON_EXISTING_LOGIN);
-
     const { id, password: dbPassword } = user;
     const match = await compare(password, dbPassword);
-    console.log(match);
-
     if (!match) throw new UnauthorizedException(DIDNT_MATCH_PASSWORDS);
     return await this.getTokens(id);
   }
 
-  public async signUp(login: string, password: string) {
+  async signUp(login: string, password: string) {
     const user = await this.userService.findOneByLogin(login);
     if (user) throw new ConflictException(ALREADY_EXIST_LOGIN);
-
     const hashedPassword = await hash(password, +CRYPT_SALT);
-
     return await this.userService.createUser({ login, password: hashedPassword });
   }
 
-  public async validateToken(refreshToken: string) {
+  async validateToken(refreshToken: string) {
     try {
       const { id } = await this.jwtService.verifyAsync(refreshToken);
       const user = await this.userService.findOne(id);
@@ -56,7 +51,7 @@ export class AuthService {
     }
   }
 
-  async getTokens(id: string) {
+  private async getTokens(id: string) {
     const accessToken = await this.jwtService.signAsync({ id });
     const refreshToken = jwt.sign({ id }, JWT_SECRET_REFRESH_KEY, { expiresIn: ms(TOKEN_REFRESH_EXPIRE_TIME) });
     await this.userService.updateRefreshToken(id, refreshToken);

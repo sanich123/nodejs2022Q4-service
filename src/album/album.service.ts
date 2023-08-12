@@ -1,32 +1,49 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateAlbumDto } from 'src/album/album.dto';
-import { MESSAGES } from 'src/utils/const';
+import { prismaErrorHandling } from 'src/utils/prisma-error-handling';
 
 @Injectable()
 export class AlbumService {
   constructor(private readonly prisma: PrismaService) {}
-  public async findAll() {
-    return await this.prisma.album.findMany();
+
+  async findAll() {
+    try {
+      return await this.prisma.album.findMany();
+    } catch (error) {
+      prismaErrorHandling(error);
+    }
   }
-  public async findOne(id: string) {
-    return await this.prisma.album.findUnique({ where: { id }, include: { artist: true } });
+
+  async findOne(id: string) {
+    try {
+      return await this.prisma.album.findUnique({ where: { id }, include: { artist: true } });
+    } catch (error) {
+      prismaErrorHandling(error);
+    }
   }
-  public async createAlbum(createAlbumDto: CreateAlbumDto) {
-    return await this.prisma.album.create({ data: createAlbumDto });
+
+  async createAlbum(createAlbumDto: CreateAlbumDto) {
+    try {
+      return await this.prisma.album.create({ data: createAlbumDto });
+    } catch (error) {
+      prismaErrorHandling(error);
+    }
   }
-  public async updateAlbum(id: string, createAlbumDto: CreateAlbumDto) {
+
+  async updateAlbum(id: string, createAlbumDto: CreateAlbumDto) {
     try {
       return await this.prisma.album.update({ where: { id }, data: createAlbumDto });
     } catch (error) {
-      throw new NotFoundException(MESSAGES.NOT_FOUND_ALBUM);
+      prismaErrorHandling(error);
     }
   }
-  public async deleteAlbum(id: string) {
+
+  async deleteAlbum(id: string) {
     try {
       return await this.prisma.album.delete({ where: { id } });
     } catch (error) {
-      throw new NotFoundException(MESSAGES.NOT_FOUND_ALBUM);
+      prismaErrorHandling(error);
     }
   }
 }
