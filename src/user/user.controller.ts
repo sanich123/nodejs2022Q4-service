@@ -1,9 +1,21 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  ForbiddenException,
+  Get,
+  HttpCode,
+  HttpStatus,
+  NotFoundException,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { MESSAGES, PATHS } from 'src/utils/const';
 import { CreateUserDto, UpdatePasswordDto } from './user.dto';
 import { UserService } from './user.service';
 import { ParamsId } from 'src/app/params-validation';
-import { throwForbiddenException, throwNotFoundException } from 'src/utils/utils';
+import { throwNotFoundException } from 'src/utils/utils';
 
 const { USER } = PATHS;
 const { CREATED, NO_CONTENT } = HttpStatus;
@@ -26,15 +38,10 @@ export class UserController {
   @Put(':id')
   async changePassword(@Body() { oldPassword, newPassword }: UpdatePasswordDto, @Param() { id }: ParamsId) {
     const findedUser = await this.userService.findOne(id);
-    if (!findedUser) throwNotFoundException(NOT_FOUND_USER);
-    else {
-      const { password } = findedUser;
-      if (password !== oldPassword) {
-        throwForbiddenException(WRONG_PASSWORD);
-      } else {
-        return await this.userService.updatePassword(newPassword, id);
-      }
-    }
+    if (!findedUser) throw new NotFoundException(NOT_FOUND_USER);
+    const { password } = findedUser;
+    if (password !== oldPassword) throw new ForbiddenException(WRONG_PASSWORD);
+    return await this.userService.updatePassword(newPassword, id);
   }
 
   @Post()
@@ -46,7 +53,6 @@ export class UserController {
   @Delete(':id')
   @HttpCode(NO_CONTENT)
   async deleteUser(@Param() { id }: ParamsId) {
-    const findedUser = await this.userService.deleteUser(id);
-    if (!findedUser) throwNotFoundException(NOT_FOUND_USER);
+    return await this.userService.deleteUser(id);
   }
 }
