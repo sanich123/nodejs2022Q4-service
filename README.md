@@ -4,7 +4,7 @@ clone project (I hope you can do that)
 
 ```cd [folder of your project]```
 
-```docker compose up```
+```docker compose up --build```
 
 To run ```npm run check:vulnerabilities``` script you have to install snyk globally (```npm i -g snyk```), and authorize in snyk (```snyk auth```). 
 
