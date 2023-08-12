@@ -23,9 +23,10 @@ async function bootstrap() {
   app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapterHost.httpAdapter, MAP_ERRORS));
   app.useGlobalFilters(new AllExceptionsFilter(httpAdapterHost));
   app.useGlobalPipes(new ValidationPipe());
+  app.enableShutdownHooks();
 
   SwaggerModule.setup('doc', app, document);
-
+  process.on('SIGINT', async () => await app.close());
   console.log(`App is listening on ${PORT}`);
 
   await app.listen(PORT);
