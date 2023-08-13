@@ -1,9 +1,8 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
-
-const { INTERNAL_SERVER_ERROR, NOT_FOUND } = HttpStatus;
+import { HttpException } from '@nestjs/common';
+import { PRISMA_ERR_TO_HTTP_CODES } from 'src/utils/const';
 
 export class PrismaException extends HttpException {
   constructor(message: string, code?: string) {
-    super(`Error in a database: ${message}`, code === 'P2025' ? NOT_FOUND : INTERNAL_SERVER_ERROR);
+    super(`Error in a database: ${message}`, PRISMA_ERR_TO_HTTP_CODES[code]);
   }
 }

@@ -1,4 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
+import { LogDefinition } from '@prisma/client/runtime/library';
 
 export const PATHS = {
   USER: 'user',
@@ -28,8 +29,27 @@ export const MESSAGES = {
   COMPARING_PASSWORD_ERROR: 'Something wrong with password comparing or tokens',
 };
 
-export const MAP_ERRORS = {
+export const PRISMA_ERR_TO_HTTP_CODES = {
   P2000: HttpStatus.BAD_REQUEST,
   P2002: HttpStatus.CONFLICT,
   P2025: HttpStatus.NOT_FOUND,
 };
+
+export const PRISMA_LEVELS: LogDefinition[] = [
+  {
+    emit: 'event',
+    level: 'query',
+  },
+  {
+    emit: 'event',
+    level: 'error',
+  },
+  {
+    emit: 'event',
+    level: 'info',
+  },
+  {
+    emit: 'event',
+    level: 'warn',
+  },
+];

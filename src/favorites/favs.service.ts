@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { prismaErrorHandling } from 'src/utils/prisma-error-handling';
+import { prismaErrorHandling } from 'src/utils/prisma-errors';
 
 @Injectable()
 export class FavsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async getAllFavorites() {
     try {

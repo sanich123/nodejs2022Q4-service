@@ -3,13 +3,13 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from './user.dto';
 import { getTimeStampFromTime } from 'src/utils/utils';
 import { hash } from 'bcrypt';
-import { prismaErrorHandling } from 'src/utils/prisma-error-handling';
+import { prismaErrorHandling } from 'src/utils/prisma-errors';
 
 const { CRYPT_SALT } = process.env;
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async findAll() {
     return this.prisma.user.findMany();
