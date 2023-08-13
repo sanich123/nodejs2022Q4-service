@@ -37,7 +37,7 @@ export class AuthService {
       const { id, password: dbPassword } = user;
       const match = await compare(password, dbPassword);
       if (!match) throw new UnauthorizedException(DIDNT_MATCH_PASSWORDS);
-      return await this.getTokens(id);
+      return await this.getTokens(id, login);
     } catch (error) {
       throw new InternalServerErrorException(COMPARING_PASSWORD_ERROR);
     }
@@ -56,22 +56,24 @@ export class AuthService {
 
   async validateToken(refreshToken: string) {
     try {
-      const { id } = await this.jwtService.verifyAsync(refreshToken);
+      const { id, login } = await this.jwtService.verifyAsync(refreshToken);
       const user = await this.userService.findOne(id);
       if (!user) throw new NotFoundException(NOT_FOUND_USER);
       const { hashedRefreshToken } = user;
       const matchedRefreshToken = await compare(refreshToken, hashedRefreshToken);
       if (!matchedRefreshToken) throw new ForbiddenException(WRONG_TOKEN);
-      return await this.getTokens(id);
+      return await this.getTokens(id, login);
     } catch {
       throw new UnauthorizedException(WRONG_TOKEN);
     }
   }
 
-  private async getTokens(id: string) {
+  private async getTokens(id: string, login: string) {
     try {
-      const accessToken = await this.jwtService.signAsync({ id });
-      const refreshToken = jwt.sign({ id }, JWT_SECRET_REFRESH_KEY, { expiresIn: ms(TOKEN_REFRESH_EXPIRE_TIME) });
+      const accessToken = await this.jwtService.signAsync({ id, login });
+      const refreshToken = jwt.sign({ id, login }, JWT_SECRET_REFRESH_KEY, {
+        expiresIn: ms(TOKEN_REFRESH_EXPIRE_TIME),
+      });
       await this.userService.updateRefreshToken(id, refreshToken);
       return { accessToken, refreshToken };
     } catch (error) {

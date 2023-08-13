@@ -5,7 +5,7 @@ import { prismaErrorHandling } from 'src/utils/prisma-errors';
 
 @Injectable()
 export class AlbumService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async findAll() {
     try {
