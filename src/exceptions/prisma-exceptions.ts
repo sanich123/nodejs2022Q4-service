@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
+
 const { INTERNAL_SERVER_ERROR, NOT_FOUND } = HttpStatus;
 
 export class PrismaException extends HttpException {

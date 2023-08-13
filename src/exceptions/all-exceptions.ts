@@ -1,5 +1,6 @@
 import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
+import { writeLogs } from 'src/utils/log-levels';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -27,6 +28,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       date: new Date().toISOString(),
       path: httpAdapter.getRequestUrl(ctx.getRequest()),
     };
+    writeLogs(JSON.stringify(responseBody));
     this.logger.error(responseBody);
 
     httpAdapter.reply(ctx.getResponse(), responseBody, statusCode);

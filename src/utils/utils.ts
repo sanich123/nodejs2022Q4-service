@@ -1,4 +1,5 @@
 import { ForbiddenException, Logger, NotFoundException } from '@nestjs/common';
+import { writeLogs } from './log-levels';
 
 export function getTimeStampFromTime(date: Date) {
   return new Date(date).getTime() / 1000;
@@ -25,6 +26,8 @@ export function unhandledRejectionHandler({ message, stack }: Error): void {
 }
 
 export function processStdinHandler(data: Buffer) {
-  Logger.log(data.toString());
-  process.stdout.write(data.toString());
+  const logs = data.toString();
+  Logger.log(logs);
+  writeLogs(`Process stdin ${logs}`);
+  process.stdout.write(logs);
 }

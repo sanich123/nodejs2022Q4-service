@@ -1,5 +1,6 @@
 import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { Prisma, PrismaClient } from '@prisma/client';
+import { writeLogs } from 'src/utils/log-levels';
 
 @Injectable()
 export class PrismaService
@@ -55,7 +56,9 @@ export class PrismaService
   };
 
   loggingMiddleware: Prisma.Middleware = async (params, next) => {
-    this.logger.log(`${params.action} ${params.model} ${JSON.stringify(params.args)}`);
+    const logIinfo = `${params.action} ${params.model} ${JSON.stringify(params.args)}`;
+    this.logger.log(logIinfo);
+    writeLogs(logIinfo);
     const result = await next(params);
     this.logger.log(result);
     return result;

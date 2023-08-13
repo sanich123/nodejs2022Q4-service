@@ -7,7 +7,7 @@ import { PrismaClientExceptionFilter } from 'nestjs-prisma';
 import { MAP_ERRORS } from './utils/const';
 import { getLogLevels } from './utils/log-levels';
 import { processStdinHandler, uncaughtErrorHandler, unhandledRejectionHandler } from './utils/utils';
-import { AllExceptionsFilter } from './exceptions-filter/exceptions-filter';
+import { AllExceptionsFilter } from './exceptions/all-exceptions';
 
 const { PORT, NODE_ENV } = process.env;
 
