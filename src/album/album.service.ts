@@ -7,7 +7,7 @@ import { prismaErrorHandling } from 'src/utils/prisma-errors';
 export class AlbumService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll() {
+  async findAll() { 
     try {
       return await this.prisma.album.findMany();
     } catch (error) {
