@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "name": "my-application",
+  "builds": [
+    {
+      "src": "dist/src/main.js",
+      "use": "@now/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "dist/src/main.js"
+    }
+  ]
+}
